@@ -306,19 +306,10 @@
 
           <div class="metric-tile metric-tile--wide">
             <div class="metric-tile__label">
-              <span>Satellites (Locked / Visible)</span>
+              <span>Inferred GNSS Lock State</span>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
-              <span id="metric-satellites-val" class="metric-tile__value tabular-nums" style="font-size: 0.85rem;">N/A (Web API)</span>
-              <button
-                type="button"
-                id="satellites-info-btn"
-                class="info-trigger-btn"
-                aria-label="Why browsers hide raw satellite count"
-                title="Why browsers hide raw satellite count"
-              >
-                ?
-              </button>
+              <span id="metric-satellites-val" class="metric-tile__value tabular-nums" style="font-size: 0.85rem;">Awaiting Fix</span>
             </div>
           </div>
         </div>
@@ -396,31 +387,24 @@
     </section>
   </main>
 
-  <!-- 6. GNSS & Satellite Explanation Modal Bottom Sheet -->
+  <!-- 6. GNSS Doppler & Signal Confidence Modal Bottom Sheet -->
   <div id="gnss-sheet-backdrop" class="bottom-sheet-backdrop" role="dialog" aria-modal="true" aria-labelledby="gnss-sheet-title" hidden>
     <div id="gnss-info-sheet" class="bottom-sheet">
       <div class="bottom-sheet__handle" aria-hidden="true"></div>
       <div class="bottom-sheet__header">
-        <h3 id="gnss-sheet-title" class="bottom-sheet__title">GNSS Doppler &amp; Browser Satellite Privacy</h3>
+        <h3 id="gnss-sheet-title" class="bottom-sheet__title">GNSS Doppler &amp; Signal Confidence</h3>
         <button type="button" id="gnss-sheet-close-btn" class="icon-btn" aria-label="Close GNSS explanation">&times; Close</button>
       </div>
       <div class="bottom-sheet__body">
         <div class="bottom-sheet__section">
-          <h4>1. Why is Satellite Count shown as &ldquo;N/A (Web API)&rdquo;?</h4>
-          <p>
-            While native Android apps can read raw <code class="diagnostic-banner__code">android.location.GnssStatus</code> and NMEA sentences (reporting GPS, GLONASS, Galileo, and BeiDou satellite counts), the <strong>W3C Web Geolocation API (<code class="diagnostic-banner__code">navigator.geolocation</code>) intentionally abstracts away satellite counts and SNR values</strong> to protect user privacy and prevent high-entropy device fingerprinting.
-          </p>
-        </div>
-
-        <div class="bottom-sheet__section">
-          <h4>2. How Hardware GNSS Doppler Velocity Works</h4>
+          <h4>1. How Hardware GNSS Doppler Velocity Works</h4>
           <p>
             When your smartphone has a clear sky view, its GNSS receiver measures the carrier-phase <strong>Doppler frequency shift</strong> of satellite radio signals (<code class="diagnostic-banner__code">coords.speed</code>, badged as <strong>DOPPLER</strong>). Doppler velocity is typically accurate to within <strong>&pm;0.18 km/h (&pm;0.05 m/s)</strong> and responds immediately without differentiation lag.
           </p>
         </div>
 
         <div class="bottom-sheet__section">
-          <h4>3. Multi-Factor Signal Confidence (0&ndash;100%)</h4>
+          <h4>2. Multi-Factor Signal Confidence (0&ndash;100%)</h4>
           <p>
             When <code class="diagnostic-banner__code">coords.speed</code> is unavailable (such as indoors or in tunnels), the engine falls back to accuracy-gated <strong>Haversine geodesic distance (<code class="diagnostic-banner__code">&Delta;d/&Delta;t</code>, badged as CALC)</strong> with exponential smoothing (<code class="diagnostic-banner__code">&alpha; = 0.35</code>) and a 1.5G multipath spike filter. Confidence combines:
           </p>

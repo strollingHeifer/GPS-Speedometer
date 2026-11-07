@@ -114,6 +114,47 @@ export function evaluateSignalConfidence({ accuracyMeters, updateHz, fixAgeSecon
 }
 
 /**
+ * Infers the active GNSS constellation lock quality from observable Web Geolocation metrics
+ * (horizontal accuracy, 3D altitude availability, update cadence Hz, fix age, and Doppler velocity).
+ * @param {Object} params
+ * @param {number|null} params.accuracyMeters
+ * @param {number|null} params.altitudeMeters
+ * @param {number} params.updateHz
+ * @param {number} params.fixAgeSeconds
+ * @param {string} params.speedSource
+ * @returns {{ state: string, label: string }}
+ */
+export function evaluateGnssLockState({
+  accuracyMeters,
+  altitudeMeters,
+  updateHz,
+  fixAgeSeconds,
+  speedSource,
+}) {
+  if (!Number.isFinite(accuracyMeters) || accuracyMeters === null) {
+    return { state: 'awaiting', label: 'Awaiting Fix' };
+  }
+  if (fixAgeSeconds > 6) {
+    return { state: 'stale', label: 'Signal Lost / Stale (>6s)' };
+  }
+  const has3dAltitude = altitudeMeters !== null && Number.isFinite(altitudeMeters);
+  if (accuracyMeters <= 5.5 && updateHz >= 0.75 && speedSource === 'doppler') {
+    return has3dAltitude
+      ? { state: '3d-doppler', label: '3D Multi-GNSS Doppler Lock' }
+      : { state: '2d-doppler', label: 'High-Precision Doppler Lock' };
+  }
+  if (accuracyMeters <= 12 && updateHz >= 0.35) {
+    return has3dAltitude
+      ? { state: '3d-gnss', label: 'Active 3D GNSS Lock' }
+      : { state: '2d-gnss', label: 'Active 2D GNSS Lock' };
+  }
+  if (accuracyMeters <= 30 && fixAgeSeconds <= 5.0) {
+    return { state: 'degraded-gnss', label: 'Degraded / Multipath GNSS' };
+  }
+  return { state: 'coarse-network', label: 'Coarse Cell / Wi-Fi Fallback' };
+}
+
+/**
  * Stateful Telemetry Engine managing velocity filtering, trip statistics,
  * staleness decay, and hybrid compass heading.
  */
@@ -456,6 +497,14 @@ export class TelemetryEngine {
       speedSource: this.speedSource,
     });
 
+    const lockState = evaluateGnssLockState({
+      accuracyMeters: this.accuracyMeters ?? NaN,
+      altitudeMeters: this.altitudeMeters,
+      updateHz: this.updateHz,
+      fixAgeSeconds,
+      speedSource: this.speedSource,
+    });
+
     const elapsedMs =
       this.startTimeMs !== null ? Math.max(0, nowMs - this.startTimeMs) : 0;
 
@@ -479,6 +528,7 @@ export class TelemetryEngine {
       isStale: this.isStale,
       spikeRejected: this.spikeRejected,
       confidence,
+      lockState,
       maxSpeedMps: this.maxSpeedMps,
       avgSpeedMps,
       totalDistanceMeters: this.totalDistanceMeters,

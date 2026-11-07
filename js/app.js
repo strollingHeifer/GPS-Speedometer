@@ -169,7 +169,6 @@ export class VelocityTelemetryApp {
       metricAgeVal: $('metric-age-val'),
       metricSourceVal: $('metric-source-val'),
       metricSatellitesVal: $('metric-satellites-val'),
-      satellitesInfoBtn: $('satellites-info-btn'),
 
       sparklineCurrentVal: $('sparkline-current-val'),
       sparklinePeakVal: $('sparkline-peak-val'),
@@ -575,6 +574,19 @@ export class VelocityTelemetryApp {
       }
     }
 
+    if (this.dom.metricSatellitesVal) {
+      const lockLabel =
+        hasFix && snapshot.lockState && snapshot.lockState.label
+          ? snapshot.lockState.label
+          : 'Awaiting Fix';
+      const lockState =
+        hasFix && snapshot.lockState && snapshot.lockState.state
+          ? snapshot.lockState.state
+          : 'awaiting';
+      this.dom.metricSatellitesVal.textContent = lockLabel;
+      this.dom.metricSatellitesVal.setAttribute('data-lock-state', lockState);
+    }
+
     // 4. 60-Second High-DPI Sparkline
     if (this.sparklineView) {
       const { peakSpeed } = this.sparklineView.render({
@@ -978,9 +990,6 @@ export class VelocityTelemetryApp {
 
     if (this.dom.gnssInfoBtn) {
       this.dom.gnssInfoBtn.addEventListener('click', openSheet);
-    }
-    if (this.dom.satellitesInfoBtn) {
-      this.dom.satellitesInfoBtn.addEventListener('click', openSheet);
     }
     if (this.dom.gnssSheetCloseBtn) {
       this.dom.gnssSheetCloseBtn.addEventListener('click', closeSheet);

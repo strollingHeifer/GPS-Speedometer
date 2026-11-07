@@ -17,6 +17,7 @@ import {
   formatCardinal,
   haversineMeters,
   evaluateSignalConfidence,
+  evaluateGnssLockState,
   TelemetryEngine,
 } from '../js/telemetry-engine.js';
 
@@ -139,6 +140,59 @@ describe('Multi-Factor Signal Confidence Model', () => {
       speedSource: 'haversine',
     });
     assert.equal(lowAcc.tier, 'poor');
+  });
+
+  it('dynamically infers GNSS Lock State across 3D Doppler, 3D/2D GNSS, Multipath, Coarse, and Stale states', () => {
+    assert.equal(
+      evaluateGnssLockState({
+        accuracyMeters: 3.5,
+        altitudeMeters: 42,
+        updateHz: 1.0,
+        fixAgeSeconds: 0.5,
+        speedSource: 'doppler',
+      }).label,
+      '3D Multi-GNSS Doppler Lock'
+    );
+    assert.equal(
+      evaluateGnssLockState({
+        accuracyMeters: 8.0,
+        altitudeMeters: null,
+        updateHz: 0.5,
+        fixAgeSeconds: 1.0,
+        speedSource: 'haversine',
+      }).label,
+      'Active 2D GNSS Lock'
+    );
+    assert.equal(
+      evaluateGnssLockState({
+        accuracyMeters: 22.0,
+        altitudeMeters: 15,
+        updateHz: 0.25,
+        fixAgeSeconds: 2.0,
+        speedSource: 'haversine',
+      }).label,
+      'Degraded / Multipath GNSS'
+    );
+    assert.equal(
+      evaluateGnssLockState({
+        accuracyMeters: 48.0,
+        altitudeMeters: null,
+        updateHz: 0.2,
+        fixAgeSeconds: 1.0,
+        speedSource: 'haversine',
+      }).label,
+      'Coarse Cell / Wi-Fi Fallback'
+    );
+    assert.equal(
+      evaluateGnssLockState({
+        accuracyMeters: 4.0,
+        altitudeMeters: 30,
+        updateHz: 1.0,
+        fixAgeSeconds: 7.5,
+        speedSource: 'doppler',
+      }).label,
+      'Signal Lost / Stale (>6s)'
+    );
   });
 });
 
