@@ -6,25 +6,62 @@
     </linearGradient>
     <linearGradient id="arcGrad512" x1="0%" y1="100%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#8cf7c6" />
-      <stop offset="60%" stop-color="#97f0ff" />
+      <stop offset="55%" stop-color="#4fd8eb" />
       <stop offset="100%" stop-color="#ffffff" />
     </linearGradient>
   </defs>
+
+  <!-- Adaptive Rounded Square Background -->
   <rect width="512" height="512" rx="116" fill="url(#bgGrad512)" />
-  <!-- Outer subtle ring -->
-  <circle cx="256" cy="268" r="196" fill="none" stroke="rgba(151,240,255,0.12)" stroke-width="3" />
-  <!-- Background Track Arc -->
-  <path d="M 112 368 A 176 176 0 1 1 400 368" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="36" stroke-linecap="round" />
-  <!-- Active Velocity Arc -->
-  <path d="M 112 368 A 176 176 0 1 1 368 144" fill="none" stroke="url(#arcGrad512)" stroke-width="36" stroke-linecap="round" />
-  <!-- Threshold Marker -->
-  <circle cx="392" cy="180" r="16" fill="#ffdad6" stroke="#ba1a1a" stroke-width="6" />
-  <!-- Needle / Vector Pointer -->
-  <g transform="translate(256, 272) rotate(36)">
-    <polygon points="-13,28 0,-144 13,28" fill="#ffffff" />
-    <circle cx="0" cy="0" r="26" fill="#97f0ff" />
+
+  <!-- Subtle Inner Dial Ring (Concentric at 256, 266) -->
+  <circle
+    cx="256"
+    cy="266"
+    r="122"
+    fill="none"
+    stroke="rgba(151, 240, 255, 0.14)"
+    stroke-width="4"
+    stroke-dasharray="10 10"
+  />
+
+  <!-- 240° Background Track Arc (Concentric at 256, 266, r=164, circumference=1030.44, 240°=686.96) -->
+  <circle
+    cx="256"
+    cy="266"
+    r="164"
+    fill="none"
+    stroke="rgba(255, 255, 255, 0.22)"
+    stroke-width="36"
+    stroke-linecap="round"
+    stroke-dasharray="686.96 1100"
+    transform="rotate(150 256 266)"
+  />
+
+  <!-- Active Velocity Arc (Identical center 256, 266 and r=164 — 156° sweep = 446.52) -->
+  <circle
+    cx="256"
+    cy="266"
+    r="164"
+    fill="none"
+    stroke="url(#arcGrad512)"
+    stroke-width="36"
+    stroke-linecap="round"
+    stroke-dasharray="446.52 1100"
+    transform="rotate(150 256 266)"
+  />
+
+  <!-- Needle / Vector Pointer (Concentric pivot at 256, 266 pointing to +36°) -->
+  <g transform="translate(256, 266) rotate(36)">
+    <polygon points="-12,26 0,-128 12,26" fill="#ffffff" />
+    <circle cx="0" cy="0" r="25" fill="#97f0ff" />
+    <circle cx="0" cy="0" r="10.5" fill="#00363d" />
   </g>
+
+  <!-- Active Arc Tip Cap at +36° on r=164 (x = 256 + 164*sin(36°) = 352.40, y = 266 - 164*cos(36°) = 133.32) -->
+  <circle cx="352.40" cy="133.32" r="13" fill="#ffffff" stroke="#006874" stroke-width="6.5" />
+
   <!-- Bottom Label Pill -->
-  <rect x="164" y="384" width="184" height="58" rx="29" fill="rgba(0,31,36,0.5)" />
-  <text x="256" y="422" text-anchor="middle" fill="#97f0ff" font-family="sans-serif" font-weight="700" font-size="32" letter-spacing="3">GNSS</text>
+  <rect x="164" y="384" width="184" height="62" rx="31" fill="rgba(0, 31, 36, 0.52)" stroke="rgba(151, 240, 255, 0.25)" stroke-width="2.5" />
+  <text x="256" y="426" text-anchor="middle" fill="#97f0ff" font-family="sans-serif" font-weight="800" font-size="32" letter-spacing="3">KM/H</text>
 </svg>

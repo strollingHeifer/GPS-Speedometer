@@ -43,13 +43,13 @@ export function selectGaugeCeiling(speedInUnit, thresholdInUnit, unit = 'kmh') {
 
 export class RadialGaugeView {
   /**
-   * @param {SVGSVGElement} svgEl - The #radial-gauge-svg element (viewBox="0 0 300 255")
+   * @param {SVGSVGElement} svgEl - The #radial-gauge-svg element (viewBox="0 0 320 265")
    */
   constructor(svgEl) {
     this.svg = svgEl;
-    this.cx = 150;
-    this.cy = 148;
-    this.radius = 112;
+    this.cx = 160;
+    this.cy = 152;
+    this.radius = 126;
     this.startAngle = -120;
     this.endAngle = 120;
     this.sweepAngle = 240;
@@ -119,7 +119,7 @@ export class RadialGaugeView {
     // Current Speed Tip Indicator Dot
     this.tipDot = document.createElementNS(SVG_NS, 'circle');
     this.tipDot.setAttribute('class', 'gauge-tip-dot');
-    this.tipDot.setAttribute('r', '6');
+    this.tipDot.setAttribute('r', '5.5');
 
     this.svg.appendChild(this.trackPath);
     this.svg.appendChild(this.limitZonePath);
@@ -142,8 +142,8 @@ export class RadialGaugeView {
       const angle = this.startAngle + ratio * this.sweepAngle;
       const isMajor = i % minorPerMajor === 0;
 
-      const outerR = this.radius - 13;
-      const innerR = isMajor ? this.radius - 23 : this.radius - 18;
+      const outerR = this.radius - 10;
+      const innerR = isMajor ? this.radius - 17 : this.radius - 14;
       const p1 = polarToCartesian(this.cx, this.cy, outerR, angle);
       const p2 = polarToCartesian(this.cx, this.cy, innerR, angle);
 
@@ -157,7 +157,7 @@ export class RadialGaugeView {
 
       if (isMajor) {
         const labelVal = Math.round(ratio * ceiling);
-        const labelPos = polarToCartesian(this.cx, this.cy, this.radius - 35, angle);
+        const labelPos = polarToCartesian(this.cx, this.cy, this.radius - 27, angle);
         const text = document.createElementNS(SVG_NS, 'text');
         text.setAttribute('x', labelPos.x.toFixed(2));
         text.setAttribute('y', labelPos.y.toFixed(2));
