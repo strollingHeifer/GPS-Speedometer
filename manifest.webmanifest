@@ -1,0 +1,26 @@
+{
+  "name": "Velocity & GNSS Telemetry Cockpit",
+  "short_name": "GNSS Speed",
+  "description": "Material Design 3 Expressive real-time mobile velocity, GNSS Doppler accuracy confidence, and speed limit alert instrument.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5fafb",
+  "theme_color": "#f5fafb",
+  "categories": ["navigation", "utilities", "productivity"],
+  "icons": [
+    {
+      "src": "./assets/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f5fafb" id="meta-theme-color" />
+  <meta name="description" content="Material Design 3 Expressive real-time mobile velocity, GNSS Doppler accuracy confidence, and speed limit alert instrument." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Velocity &amp; GNSS Telemetry Cockpit</title>
+
+  <!-- Google Fonts: Noto Sans & Noto Sans Mono (with local Google Sans priority in CSS) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@500;600;700;800&family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="./assets/icon-192.svg" />
+  <link rel="apple-touch-icon" href="./assets/icon-192.svg" />
+
+  <link rel="stylesheet" href="./css/m3-tokens.css" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <!-- 1. Secure Context Diagnostic Banner (Shown only when window.isSecureContext === false) -->
+  <aside id="secure-context-banner" class="diagnostic-banner diagnostic-banner--warning" role="alert" hidden>
+    <div class="diagnostic-banner__content">
+      <div class="diagnostic-banner__title">Unencrypted Origin Detected (Geolocation &amp; Wake Lock Restricted)</div>
+      <p>
+        Browser security requires <strong>HTTPS</strong> or <strong>localhost</strong> for GNSS Geolocation, Screen Wake Lock, and Service Workers.
+        If testing on an Android phone over USB, forward port 8080 via ADB:
+      </p>
+      <ol class="diagnostic-banner__steps">
+        <li>Run <code class="diagnostic-banner__code">adb reverse tcp:8080 tcp:8080</code> on your computer</li>
+        <li>Open <code class="diagnostic-banner__code">http://localhost:8080</code> in Chrome for Android (or unlock Demo Mode by tapping the GPS status pill 5 times)</li>
+      </ol>
+    </div>
+  </aside>
+
+  <!-- 2. Permission Error & Recovery Banner (Shown on PERMISSION_DENIED / TIMEOUT / POSITION_UNAVAILABLE) -->
+  <aside id="permission-error-banner" class="diagnostic-banner diagnostic-banner--error" role="alert" hidden>
+    <div class="diagnostic-banner__content">
+      <div id="permission-error-title" class="diagnostic-banner__title">Location Permission Denied</div>
+      <p id="permission-error-message">
+        Precise GNSS access is required to measure real-time speed. To re-enable in Chrome for Android:
+      </p>
+      <ol id="permission-error-steps" class="diagnostic-banner__steps">
+        <li>Tap the <strong>Site Info / Tune icon</strong> to the left of the address bar</li>
+        <li>Tap <strong>Permissions &rarr; Location &rarr; Allow</strong> (enable <em>Use precise location</em>)</li>
+        <li>Tap <strong>Retry GNSS</strong> below</li>
+      </ol>
+    </div>
+    <div class="diagnostic-banner__actions">
+      <button type="button" id="permission-retry-btn" class="chip-btn">Retry GNSS</button>
+      <button type="button" id="permission-dismiss-btn" class="icon-btn" aria-label="Dismiss banner">&times;</button>
+    </div>
+  </aside>
+
+  <!-- 3. Top App Bar -->
+  <header class="top-app-bar">
+    <div class="top-app-bar__brand">
+      <img src="./assets/icon-192.svg" alt="" width="28" height="28" style="border-radius: 7px;" />
+      <h1 class="top-app-bar__title">GNSS Velocity</h1>
+
+      <!-- 5-Tap within 3s Demo Unlock Target -->
+      <button
+        type="button"
+        id="gps-status-badge"
+        class="status-pill"
+        data-status="idle"
+        title="GNSS Status (Tap 5 times quickly to unlock Developer Demo Mode)"
+        aria-live="polite"
+      >
+        <span id="gps-status-dot" class="status-pill__dot"></span>
+        <span id="gps-status-text">Standby</span>
+      </button>
+    </div>
+
+    <div class="top-app-bar__actions">
+      <!-- Screen Wake Lock Status Chip -->
+      <div id="wake-lock-chip" class="wake-chip" data-active="false" title="Screen Wake Lock Status">
+        <span aria-hidden="true">&#9728;</span>
+        <span id="wake-lock-text">Wake: Idle</span>
+      </div>
+
+      <!-- Audio Alert Mute Toggle -->
+      <button
+        type="button"
+        id="audio-mute-btn"
+        class="icon-btn"
+        aria-pressed="false"
+        title="Mute or Unmute Speed Limit Audio Chime"
+      >
+        <span id="audio-mute-icon" aria-hidden="true">&#128266;</span>
+        <span id="audio-mute-label">Chime On</span>
+      </button>
+
+      <!-- 3-State Segmented Theme Switcher (System | Light | Dark) -->
+      <div id="theme-switcher" class="segmented-theme" role="group" aria-label="Color Theme Mode">
+        <button type="button" class="segmented-theme__btn" data-theme-opt="system" aria-pressed="true">System</button>
+        <button type="button" class="segmented-theme__btn" data-theme-opt="light" aria-pressed="false">Light</button>
+        <button type="button" class="segmented-theme__btn" data-theme-opt="dark" aria-pressed="false">Dark</button>
+      </div>
+
+      <!-- GNSS & Satellite Info Button (?) -->
+      <button
+        type="button"
+        id="gnss-info-btn"
+        class="icon-btn"
+        aria-label="GNSS Telemetry &amp; Satellite API Explanation"
+        title="How GNSS Doppler &amp; Web Geolocation Accuracy Work"
+      >
+        ?
+      </button>
+    </div>
+  </header>
+
+  <!-- 4. Hidden-by-Default Developer Simulation Control Bar (?demo=1 or 5-Tap Unlock) -->
+  <section id="demo-control-bar" class="demo-bar" aria-label="Developer Telemetry Simulator" hidden>
+    <div class="demo-bar__header">
+      <div class="demo-bar__title">
+        <span>&#9881; Developer Telemetry Simulator</span>
+        <span id="demo-status-label" class="tabular-nums" style="font-weight: 500; opacity: 0.85;">(Inactive)</span>
+      </div>
+      <div class="demo-bar__scenarios" role="group" aria-label="Simulation Scenarios">
+        <button type="button" class="chip-btn" data-scenario="city" aria-pressed="false">City Drive</button>
+        <button type="button" class="chip-btn" data-scenario="threshold" aria-pressed="false">Threshold Crossing Test</button>
+        <button type="button" class="chip-btn" data-scenario="highway" aria-pressed="false">Highway Cruise</button>
+        <button type="button" class="chip-btn" data-scenario="tunnel" aria-pressed="false">Tunnel / Poor Signal</button>
+        <button type="button" class="chip-btn" data-scenario="manual" aria-pressed="false">Manual Sliders</button>
+        <button type="button" id="demo-stop-btn" class="chip-btn">Stop Sim</button>
+      </div>
+    </div>
+
+    <div id="demo-manual-controls" class="demo-bar__sliders" hidden>
+      <label class="slider-field" for="sim-speed-slider">
+        <span class="slider-field__label">
+          <span>Simulated Speed</span>
+          <span id="sim-speed-val" class="tabular-nums">65 km/h</span>
+        </span>
+        <input type="range" id="sim-speed-slider" min="0" max="220" step="1" value="65" />
+      </label>
+
+      <label class="slider-field" for="sim-acc-slider">
+        <span class="slider-field__label">
+          <span>Horizontal Accuracy (&pm;)</span>
+          <span id="sim-acc-val" class="tabular-nums">&pm; 4 m</span>
+        </span>
+        <input type="range" id="sim-acc-slider" min="2" max="60" step="1" value="4" />
+      </label>
+
+      <label class="slider-field" for="sim-rate-slider">
+        <span class="slider-field__label">
+          <span>Fix Update Rate</span>
+          <span id="sim-rate-val" class="tabular-nums">1.0 Hz</span>
+        </span>
+        <input type="range" id="sim-rate-slider" min="0.2" max="2.0" step="0.1" value="1.0" />
+      </label>
+    </div>
+  </section>
+
+  <!-- 5. Main Responsive Cockpit Grid -->
+  <main class="cockpit-grid">
+    <!-- Left / Primary Pane: Hero Speedometer & Primary Controls -->
+    <section class="primary-pane" aria-label="Primary Speedometer Instrument">
+      <div id="hero-speed-card" class="m3-card hero-card">
+        <div class="hero-card__top-bar">
+          <!-- Unit Segmented Button (km/h | mph) -->
+          <div id="unit-segmented-control" class="unit-segmented" role="group" aria-label="Speed Measurement Unit">
+            <button type="button" id="unit-kmh-btn" class="unit-segmented__btn" data-unit="kmh" aria-pressed="true">
+              km/h
+            </button>
+            <button type="button" id="unit-mph-btn" class="unit-segmented__btn" data-unit="mph" aria-pressed="false">
+              mph
+            </button>
+          </div>
+
+          <span id="gauge-scale-badge" class="scale-badge tabular-nums">Scale: 0–120 km/h</span>
+        </div>
+
+        <!-- 240° SVG Radial Gauge + Center Tabular Readout -->
+        <div class="gauge-container">
+          <svg
+            id="radial-gauge-svg"
+            class="radial-gauge-svg"
+            viewBox="0 0 300 255"
+            role="img"
+            aria-label="240 degree radial speedometer gauge"
+          ></svg>
+
+          <div class="gauge-center-readout">
+            <div id="hero-speed-value" class="hero-speed-value tabular-nums" aria-live="polite">0.0</div>
+            <div class="hero-speed-meta">
+              <span id="hero-speed-unit" class="hero-speed-unit">km/h</span>
+              <span id="hero-speed-source" class="source-pill" data-source="idle">IDLE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Speed Threshold Warning Banner (Shown when over limit) -->
+        <div id="threshold-alert-banner" class="threshold-alert-banner" role="status" aria-live="assertive" hidden>
+          <span aria-hidden="true">&#9888;</span>
+          <span id="threshold-alert-text">SPEED LIMIT EXCEEDED (Limit: 80 km/h)</span>
+        </div>
+
+        <!-- Primary Action Controls: Start/Pause Tracking + Reset Session -->
+        <div class="hero-controls">
+          <button
+            type="button"
+            id="start-stop-btn"
+            class="btn-primary-m3"
+            data-tracking="false"
+          >
+            <span id="start-stop-icon" aria-hidden="true">&#9654;</span>
+            <span id="start-stop-label">Start Tracking</span>
+          </button>
+
+          <button
+            type="button"
+            id="reset-session-btn"
+            class="btn-tonal-m3"
+            title="Reset Trip Statistics &amp; Sparkline"
+          >
+            Reset Session
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right / Telemetry Pane: Speed Threshold, Signal Confidence, 60s Sparkline, Session & Compass -->
+    <section class="telemetry-pane" aria-label="Telemetry &amp; Threshold Controls">
+      <!-- Card 1: Speed Limit Threshold Alert Configuration -->
+      <article id="threshold-card" class="m3-card">
+        <div class="m3-card__header">
+          <h2 class="m3-card__title">Speed Limit Threshold</h2>
+          <div class="threshold-header-right">
+            <span id="threshold-display-value" class="threshold-readout-pill tabular-nums">80 km/h</span>
+            <label class="m3-switch" title="Enable or Disable Speed Limit Alert">
+              <input type="checkbox" id="threshold-enable-toggle" role="switch" checked aria-label="Enable Speed Limit Threshold Alert" />
+              <span class="m3-switch__track">
+                <span class="m3-switch__thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Quick-Preset M3 Filter Chips -->
+        <div id="threshold-presets-container" class="preset-chips-row" role="group" aria-label="Speed Limit Presets">
+          <button type="button" class="chip-btn" data-preset="30">30</button>
+          <button type="button" class="chip-btn" data-preset="50">50</button>
+          <button type="button" class="chip-btn is-active" data-preset="80">80</button>
+          <button type="button" class="chip-btn" data-preset="100">100</button>
+          <button type="button" class="chip-btn" data-preset="120">120</button>
+        </div>
+
+        <!-- Fine-Tuning Slider + -5 / +5 Stepper Buttons -->
+        <div class="threshold-slider-row">
+          <button type="button" id="threshold-minus-btn" class="stepper-btn" aria-label="Decrease limit by 5">&minus;5</button>
+          <input
+            type="range"
+            id="threshold-slider"
+            min="10"
+            max="200"
+            step="1"
+            value="80"
+            aria-label="Speed Limit Threshold Slider"
+          />
+          <button type="button" id="threshold-plus-btn" class="stepper-btn" aria-label="Increase limit by 5">+5</button>
+        </div>
+      </article>
+
+      <!-- Card 2: Signal Accuracy & Confidence Insights -->
+      <article id="confidence-card" class="m3-card">
+        <div class="m3-card__header">
+          <h2 class="m3-card__title">Signal Accuracy &amp; Confidence</h2>
+          <span id="confidence-tier-badge" class="confidence-tier-pill" data-tier="poor">Awaiting Fix</span>
+        </div>
+
+        <div class="confidence-bar-wrap">
+          <div class="confidence-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="confidence-progressbar">
+            <div id="confidence-progress-fill" class="confidence-bar-fill" data-tier="poor" style="width: 0%;"></div>
+          </div>
+          <span id="confidence-score-value" class="tabular-nums" style="font-weight: 700; font-size: 0.85rem;">0%</span>
+        </div>
+
+        <div class="telemetry-metrics-grid">
+          <div class="metric-tile">
+            <span class="metric-tile__label">Horizontal Uncertainty</span>
+            <span id="metric-accuracy-val" class="metric-tile__value tabular-nums">&pm; -- m</span>
+          </div>
+
+          <div class="metric-tile">
+            <span class="metric-tile__label">Fix Update Cadence</span>
+            <span id="metric-hz-val" class="metric-tile__value tabular-nums">0.0 Hz</span>
+          </div>
+
+          <div class="metric-tile">
+            <span class="metric-tile__label">Fix Staleness / Age</span>
+            <span id="metric-age-val" class="metric-tile__value tabular-nums">-- s</span>
+          </div>
+
+          <div class="metric-tile">
+            <span class="metric-tile__label">Velocity Source</span>
+            <span id="metric-source-val" class="metric-tile__value">Awaiting Fix</span>
+          </div>
+
+          <div class="metric-tile metric-tile--wide">
+            <div class="metric-tile__label">
+              <span>Satellites (Locked / Visible)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="metric-satellites-val" class="metric-tile__value tabular-nums" style="font-size: 0.85rem;">N/A (Web API)</span>
+              <button
+                type="button"
+                id="satellites-info-btn"
+                class="info-trigger-btn"
+                aria-label="Why browsers hide raw satellite count"
+                title="Why browsers hide raw satellite count"
+              >
+                ?
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 3: 60-Second Live Speed Sparkline -->
+      <article id="sparkline-card" class="m3-card">
+        <div class="m3-card__header">
+          <h2 class="m3-card__title">60s Live Speed Trace</h2>
+          <div class="sparkline-legend tabular-nums">
+            <span>Now: <strong id="sparkline-current-val">0.0</strong></span>
+            <span>Peak: <strong id="sparkline-peak-val">0.0</strong></span>
+            <span>Limit: <strong id="sparkline-limit-val">80</strong></span>
+          </div>
+        </div>
+
+        <div class="sparkline-canvas-wrap">
+          <canvas id="sparkline-canvas" aria-label="Rolling 60-second velocity sparkline chart"></canvas>
+        </div>
+      </article>
+
+      <!-- Card 4: Session Statistics & Compass / Altitude -->
+      <article id="session-compass-card" class="m3-card">
+        <div class="m3-card__header">
+          <h2 class="m3-card__title">Session &amp; Orientation</h2>
+          <span id="stat-elapsed" class="threshold-readout-pill tabular-nums">00:00</span>
+        </div>
+
+        <div class="session-compass-layout">
+          <div class="session-stats-grid">
+            <div class="metric-tile">
+              <span class="metric-tile__label">Max Speed</span>
+              <span id="stat-max-speed" class="metric-tile__value tabular-nums">0.0 km/h</span>
+            </div>
+
+            <div class="metric-tile">
+              <span class="metric-tile__label">Avg Speed</span>
+              <span id="stat-avg-speed" class="metric-tile__value tabular-nums">0.0 km/h</span>
+            </div>
+
+            <div class="metric-tile">
+              <span class="metric-tile__label">Trip Distance</span>
+              <span id="stat-distance" class="metric-tile__value tabular-nums">0.00 km</span>
+            </div>
+
+            <div class="metric-tile">
+              <span class="metric-tile__label">Altitude (MSL/WGS84)</span>
+              <span id="stat-altitude" class="metric-tile__value tabular-nums">-- m <small id="stat-alt-acc" style="font-weight: 500; opacity: 0.75;"></small></span>
+            </div>
+          </div>
+
+          <!-- Interactive SVG Compass Rose -->
+          <div class="compass-widget" aria-label="Course Heading Compass">
+            <svg id="compass-svg" class="compass-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="44" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="2" />
+              <g id="compass-dial" class="compass-dial-group">
+                <text x="50" y="16" text-anchor="middle" fill="var(--md-sys-color-error)" font-size="11" font-weight="800">N</text>
+                <text x="86" y="54" text-anchor="middle" fill="var(--md-sys-color-on-surface-variant)" font-size="9" font-weight="700">E</text>
+                <text x="50" y="91" text-anchor="middle" fill="var(--md-sys-color-on-surface-variant)" font-size="9" font-weight="700">S</text>
+                <text x="14" y="54" text-anchor="middle" fill="var(--md-sys-color-on-surface-variant)" font-size="9" font-weight="700">W</text>
+                <!-- North Pointer Arrow -->
+                <polygon points="50,22 44,50 50,44 56,50" fill="var(--md-sys-color-primary)" />
+                <polygon points="50,78 44,50 50,56 56,50" fill="var(--md-sys-color-outline)" opacity="0.5" />
+                <circle cx="50" cy="50" r="4" fill="var(--md-sys-color-on-surface)" />
+              </g>
+            </svg>
+            <div class="compass-readout tabular-nums">
+              <span id="compass-deg-val">---&deg;</span>
+              <span id="compass-cardinal-val">--</span>
+            </div>
+            <span id="compass-source-badge" class="compass-source-badge">No Heading</span>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- 6. GNSS & Satellite Explanation Modal Bottom Sheet -->
+  <div id="gnss-sheet-backdrop" class="bottom-sheet-backdrop" role="dialog" aria-modal="true" aria-labelledby="gnss-sheet-title" hidden>
+    <div id="gnss-info-sheet" class="bottom-sheet">
+      <div class="bottom-sheet__handle" aria-hidden="true"></div>
+      <div class="bottom-sheet__header">
+        <h3 id="gnss-sheet-title" class="bottom-sheet__title">GNSS Doppler &amp; Browser Satellite Privacy</h3>
+        <button type="button" id="gnss-sheet-close-btn" class="icon-btn" aria-label="Close GNSS explanation">&times; Close</button>
+      </div>
+      <div class="bottom-sheet__body">
+        <div class="bottom-sheet__section">
+          <h4>1. Why is Satellite Count shown as &ldquo;N/A (Web API)&rdquo;?</h4>
+          <p>
+            While native Android apps can read raw <code class="diagnostic-banner__code">android.location.GnssStatus</code> and NMEA sentences (reporting GPS, GLONASS, Galileo, and BeiDou satellite counts), the <strong>W3C Web Geolocation API (<code class="diagnostic-banner__code">navigator.geolocation</code>) intentionally abstracts away satellite counts and SNR values</strong> to protect user privacy and prevent high-entropy device fingerprinting.
+          </p>
+        </div>
+
+        <div class="bottom-sheet__section">
+          <h4>2. How Hardware GNSS Doppler Velocity Works</h4>
+          <p>
+            When your smartphone has a clear sky view, its GNSS receiver measures the carrier-phase <strong>Doppler frequency shift</strong> of satellite radio signals (<code class="diagnostic-banner__code">coords.speed</code>, badged as <strong>DOPPLER</strong>). Doppler velocity is typically accurate to within <strong>&pm;0.18 km/h (&pm;0.05 m/s)</strong> and responds immediately without differentiation lag.
+          </p>
+        </div>
+
+        <div class="bottom-sheet__section">
+          <h4>3. Multi-Factor Signal Confidence (0&ndash;100%)</h4>
+          <p>
+            When <code class="diagnostic-banner__code">coords.speed</code> is unavailable (such as indoors or in tunnels), the engine falls back to accuracy-gated <strong>Haversine geodesic distance (<code class="diagnostic-banner__code">&Delta;d/&Delta;t</code>, badged as CALC)</strong> with exponential smoothing (<code class="diagnostic-banner__code">&alpha; = 0.35</code>) and a 1.5G multipath spike filter. Confidence combines:
+          </p>
+          <ul style="padding-left: 18px; margin-top: 6px;">
+            <li><strong>Excellent (&le;5.5 m, &ge;0.75 Hz)</strong>: Active multi-constellation GNSS Doppler lock.</li>
+            <li><strong>Good (5.5&ndash;12 m, &ge;0.35 Hz)</strong>: Reliable GNSS fix.</li>
+            <li><strong>Fair (12&ndash;30 m)</strong>: Urban canyon multipath or partial sky view.</li>
+            <li><strong>Poor (&gt;30 m or Fix Age &gt;5s)</strong>: Cell/Wi-Fi fallback or tunnel loss.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. M3 Transient Snackbar -->
+  <div id="app-snackbar" class="m3-snackbar" role="status" aria-live="polite" hidden></div>
+
+  <!-- Main Application ES Module -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

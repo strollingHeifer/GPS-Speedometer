@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#006874" />
+      <stop offset="100%" stop-color="#00363d" />
+    </linearGradient>
+    <linearGradient id="arcGrad512" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8cf7c6" />
+      <stop offset="60%" stop-color="#97f0ff" />
+      <stop offset="100%" stop-color="#ffffff" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bgGrad512)" />
+  <!-- Outer subtle ring -->
+  <circle cx="256" cy="268" r="196" fill="none" stroke="rgba(151,240,255,0.12)" stroke-width="3" />
+  <!-- Background Track Arc -->
+  <path d="M 112 368 A 176 176 0 1 1 400 368" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="36" stroke-linecap="round" />
+  <!-- Active Velocity Arc -->
+  <path d="M 112 368 A 176 176 0 1 1 368 144" fill="none" stroke="url(#arcGrad512)" stroke-width="36" stroke-linecap="round" />
+  <!-- Threshold Marker -->
+  <circle cx="392" cy="180" r="16" fill="#ffdad6" stroke="#ba1a1a" stroke-width="6" />
+  <!-- Needle / Vector Pointer -->
+  <g transform="translate(256, 272) rotate(36)">
+    <polygon points="-13,28 0,-144 13,28" fill="#ffffff" />
+    <circle cx="0" cy="0" r="26" fill="#97f0ff" />
+  </g>
+  <!-- Bottom Label Pill -->
+  <rect x="164" y="384" width="184" height="58" rx="29" fill="rgba(0,31,36,0.5)" />
+  <text x="256" y="422" text-anchor="middle" fill="#97f0ff" font-family="sans-serif" font-weight="700" font-size="32" letter-spacing="3">GNSS</text>
+</svg>

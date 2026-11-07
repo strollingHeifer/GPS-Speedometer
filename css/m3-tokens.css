@@ -1,0 +1,181 @@
+/* css/m3-tokens.css — Material Design 3 Expressive Tokens (Light Default, Dark & System Adaptive) */
+
+:root,
+[data-theme="light"] {
+  /* M3 Light Theme (Default) */
+  --md-sys-color-background: #f5fafb;
+  --md-sys-color-on-background: #171d1e;
+  --md-sys-color-surface: #f5fafb;
+  --md-sys-color-surface-dim: #d5dbdc;
+  --md-sys-color-surface-bright: #f5fafb;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #eff5f6;
+  --md-sys-color-surface-container: #e9eff0;
+  --md-sys-color-surface-container-high: #e3e9ea;
+  --md-sys-color-surface-container-highest: #dee3e5;
+  --md-sys-color-on-surface: #171d1e;
+  --md-sys-color-on-surface-variant: #3f484a;
+  --md-sys-color-outline: #6f797a;
+  --md-sys-color-outline-variant: #bfc8ca;
+
+  /* M3 Primary (Telemetry Teal) & Secondary */
+  --md-sys-color-primary: #006874;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #97f0ff;
+  --md-sys-color-on-primary-container: #001f24;
+  --md-sys-color-secondary: #4a6267;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #cde7ec;
+  --md-sys-color-on-secondary-container: #051f23;
+
+  /* Semantic Signal Quality & M3 Error Tokens */
+  --md-sys-color-tertiary: #006c47;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #8cf7c6;
+  --md-sys-color-on-tertiary-container: #002113;
+  --md-sys-color-warning: #8b5000;
+  --md-sys-color-on-warning: #ffffff;
+  --md-sys-color-warning-container: #ffdcbe;
+  --md-sys-color-on-warning-container: #2c1600;
+  --md-sys-color-error: #ba1a1a;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #ffdad6;
+  --md-sys-color-on-error-container: #410002;
+
+  /* Inverse & Scrim */
+  --md-sys-color-inverse-surface: #2b3133;
+  --md-sys-color-inverse-on-surface: #ecf2f3;
+  --md-sys-color-inverse-primary: #4fd8eb;
+  --md-sys-color-scrim: rgba(0, 0, 0, 0.48);
+
+  /*Elevation Shadows */
+  --md-sys-elevation-1: 0 1px 3px rgba(0, 31, 36, 0.08), 0 1px 2px rgba(0, 31, 36, 0.06);
+  --md-sys-elevation-2: 0 4px 12px rgba(0, 31, 36, 0.10), 0 1px 3px rgba(0, 31, 36, 0.06);
+  --md-sys-elevation-3: 0 8px 24px rgba(0, 31, 36, 0.14), 0 2px 6px rgba(0, 31, 36, 0.08);
+
+  /* Typography: Google Sans & Noto Sans */
+  --md-sys-typescale-font-brand: 'Google Sans', 'Google Sans Display', 'Noto Sans', system-ui, -apple-system, sans-serif;
+  --md-sys-typescale-font-plain: 'Google Sans Text', 'Google Sans', 'Noto Sans', system-ui, -apple-system, sans-serif;
+  --md-sys-typescale-font-mono: 'Google Sans Mono', 'Noto Sans Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* M3 Expressive Shape & Motion Tokens */
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-large: 20px;
+  --md-sys-shape-corner-medium: 14px;
+  --md-sys-shape-corner-small: 10px;
+  --md-sys-shape-corner-full: 9999px;
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-duration-short: 180ms;
+  --md-sys-motion-duration-medium: 300ms;
+  --md-sys-motion-duration-long: 450ms;
+
+  color-scheme: light;
+}
+
+/* Explicit Dark Theme */
+[data-theme="dark"] {
+  --md-sys-color-background: #0e1415;
+  --md-sys-color-on-background: #dee3e5;
+  --md-sys-color-surface: #0e1415;
+  --md-sys-color-surface-dim: #0e1415;
+  --md-sys-color-surface-bright: #343a3b;
+  --md-sys-color-surface-container-lowest: #090f10;
+  --md-sys-color-surface-container-low: #171d1e;
+  --md-sys-color-surface-container: #1b2122;
+  --md-sys-color-surface-container-high: #252b2c;
+  --md-sys-color-surface-container-highest: #303637;
+  --md-sys-color-on-surface: #dee3e5;
+  --md-sys-color-on-surface-variant: #bfc8ca;
+  --md-sys-color-outline: #899294;
+  --md-sys-color-outline-variant: #3f484a;
+
+  /* M3 Dark Primary & Secondary */
+  --md-sys-color-primary: #4fd8eb;
+  --md-sys-color-on-primary: #00363d;
+  --md-sys-color-primary-container: #004f58;
+  --md-sys-color-on-primary-container: #97f0ff;
+  --md-sys-color-secondary: #b1cbd0;
+  --md-sys-color-on-secondary: #1c3438;
+  --md-sys-color-secondary-container: #334b4f;
+  --md-sys-color-on-secondary-container: #cde7ec;
+
+  /* Semantic Signal Quality & M3 Error Tokens (Dark) */
+  --md-sys-color-tertiary: #6fdaab;
+  --md-sys-color-on-tertiary: #003823;
+  --md-sys-color-tertiary-container: #005235;
+  --md-sys-color-on-tertiary-container: #8cf7c6;
+  --md-sys-color-warning: #ffb870;
+  --md-sys-color-on-warning: #4a2800;
+  --md-sys-color-warning-container: #693c00;
+  --md-sys-color-on-warning-container: #ffdcbe;
+  --md-sys-color-error: #ffb4ab;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000a;
+  --md-sys-color-on-error-container: #ffdad6;
+
+  /* Inverse & Scrim */
+  --md-sys-color-inverse-surface: #dee3e5;
+  --md-sys-color-inverse-on-surface: #2b3133;
+  --md-sys-color-inverse-primary: #006874;
+  --md-sys-color-scrim: rgba(0, 0, 0, 0.68);
+
+  --md-sys-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --md-sys-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.30);
+  --md-sys-elevation-3: 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
+
+  color-scheme: dark;
+}
+
+/* System Dark Preference when not explicitly locked to light */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --md-sys-color-background: #0e1415;
+    --md-sys-color-on-background: #dee3e5;
+    --md-sys-color-surface: #0e1415;
+    --md-sys-color-surface-dim: #0e1415;
+    --md-sys-color-surface-bright: #343a3b;
+    --md-sys-color-surface-container-lowest: #090f10;
+    --md-sys-color-surface-container-low: #171d1e;
+    --md-sys-color-surface-container: #1b2122;
+    --md-sys-color-surface-container-high: #252b2c;
+    --md-sys-color-surface-container-highest: #303637;
+    --md-sys-color-on-surface: #dee3e5;
+    --md-sys-color-on-surface-variant: #bfc8ca;
+    --md-sys-color-outline: #899294;
+    --md-sys-color-outline-variant: #3f484a;
+
+    --md-sys-color-primary: #4fd8eb;
+    --md-sys-color-on-primary: #00363d;
+    --md-sys-color-primary-container: #004f58;
+    --md-sys-color-on-primary-container: #97f0ff;
+    --md-sys-color-secondary: #b1cbd0;
+    --md-sys-color-on-secondary: #1c3438;
+    --md-sys-color-secondary-container: #334b4f;
+    --md-sys-color-on-secondary-container: #cde7ec;
+
+    --md-sys-color-tertiary: #6fdaab;
+    --md-sys-color-on-tertiary: #003823;
+    --md-sys-color-tertiary-container: #005235;
+    --md-sys-color-on-tertiary-container: #8cf7c6;
+    --md-sys-color-warning: #ffb870;
+    --md-sys-color-on-warning: #4a2800;
+    --md-sys-color-warning-container: #693c00;
+    --md-sys-color-on-warning-container: #ffdcbe;
+    --md-sys-color-error: #ffb4ab;
+    --md-sys-color-on-error: #690005;
+    --md-sys-color-error-container: #93000a;
+    --md-sys-color-on-error-container: #ffdad6;
+
+    --md-sys-color-inverse-surface: #dee3e5;
+    --md-sys-color-inverse-on-surface: #2b3133;
+    --md-sys-color-inverse-primary: #006874;
+    --md-sys-color-scrim: rgba(0, 0, 0, 0.68);
+
+    --md-sys-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+    --md-sys-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.30);
+    --md-sys-elevation-3: 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
+
+    color-scheme: dark;
+  }
+}
