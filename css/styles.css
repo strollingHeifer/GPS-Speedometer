@@ -217,6 +217,7 @@ body {
   justify-content: center;
   gap: 6px;
   height: 36px;
+  min-width: 108px;
   padding: 0 12px;
   border-radius: var(--md-sys-shape-corner-full);
   border: 1px solid var(--md-sys-color-outline-variant);
@@ -266,10 +267,24 @@ body {
   background-color: var(--md-sys-color-surface-container-high);
 }
 
-.icon-btn[aria-pressed="true"] {
+#audio-mute-btn {
+  min-width: 104px;
+}
+
+#audio-mute-btn[aria-pressed="true"] {
   background-color: var(--md-sys-color-error-container);
   color: var(--md-sys-color-on-error-container);
   border-color: var(--md-sys-color-error);
+}
+
+#toggle-all-cards-btn {
+  min-width: 134px;
+}
+
+#toggle-all-cards-btn[aria-pressed="true"] {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
 }
 
 /* 3-State Segmented Theme Switcher (Exact 36px outer height matching sibling controls) */
@@ -412,6 +427,7 @@ body {
   box-shadow: var(--md-sys-elevation-1);
   border: 1px solid var(--md-sys-color-outline-variant);
   transition:
+    padding var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
     background-color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized),
     border-color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized),
     box-shadow var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized);
@@ -433,6 +449,63 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.m3-card__title[data-card-toggle] {
+  cursor: pointer;
+  user-select: none;
+}
+
+.card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-tile-surface, var(--md-sys-color-surface-container-low));
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
+    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.card-collapse-btn:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+
+.card-collapse-chevron {
+  display: inline-block;
+  transition: transform var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-emphasized);
+}
+
+.m3-card.is-collapsed {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.m3-card.is-collapsed .m3-card__header {
+  margin-bottom: 0;
+}
+
+.m3-card.is-collapsed .m3-card__body {
+  display: none;
+}
+
+.m3-card.is-collapsed .card-collapse-chevron {
+  transform: rotate(-90deg);
 }
 
 /* Hero Speedometer Card & Over-Limit Alert State */

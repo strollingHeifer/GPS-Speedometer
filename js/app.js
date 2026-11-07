@@ -26,12 +26,15 @@ const PRESETS_BY_UNIT = {
   mph: [20, 30, 50, 65, 75],
 };
 
+const COLLAPSIBLE_CARD_KEYS = ['threshold', 'confidence', 'sparkline', 'session'];
+
 const STORAGE_KEYS = {
   theme: 'theme',
   unit: 'gnss_velocity_unit',
   thresholdMps: 'gnss_velocity_threshold_mps',
   thresholdEnabled: 'gnss_velocity_threshold_enabled',
   audioMuted: 'gnss_velocity_audio_muted',
+  collapsedCards: 'gnss_velocity_collapsed_cards',
 };
 
 function safeGetStorage(key, fallback = null) {
@@ -74,6 +77,23 @@ export class VelocityTelemetryApp {
     this.thresholdEnabled = savedEnabled !== 'false';
 
     const savedMuted = safeGetStorage(STORAGE_KEYS.audioMuted, 'false') === 'true';
+
+    this.collapsedCards = {
+      threshold: false,
+      confidence: false,
+      sparkline: false,
+      session: false,
+    };
+    try {
+      const savedCollapsed = JSON.parse(safeGetStorage(STORAGE_KEYS.collapsedCards, '{}') || '{}');
+      if (savedCollapsed && typeof savedCollapsed === 'object') {
+        for (const key of COLLAPSIBLE_CARD_KEYS) {
+          this.collapsedCards[key] = Boolean(savedCollapsed[key]);
+        }
+      }
+    } catch (_) {
+      // Ignore malformed JSON in localStorage
+    }
 
     // Subsystems
     this.engine = new TelemetryEngine();
@@ -124,6 +144,9 @@ export class VelocityTelemetryApp {
       audioMuteBtn: $('audio-mute-btn'),
       audioMuteIcon: $('audio-mute-icon'),
       audioMuteLabel: $('audio-mute-label'),
+      toggleAllCardsBtn: $('toggle-all-cards-btn'),
+      toggleAllCardsIcon: $('toggle-all-cards-icon'),
+      toggleAllCardsLabel: $('toggle-all-cards-label'),
       themeSwitcher: $('theme-switcher'),
       gnssInfoBtn: $('gnss-info-btn'),
 
@@ -200,6 +223,7 @@ export class VelocityTelemetryApp {
     this._initCompassListener();
     this._initDemoUnlockState();
     this._syncAudioMuteUi();
+    this._syncCardCollapseUi();
     this._syncUnitAndThresholdControls();
     this._renderWakeLockStatus(this.wakeLock.getStatus());
     this._renderSnapshot(this.engine.getSnapshot(Date.now()));
@@ -853,6 +877,24 @@ export class VelocityTelemetryApp {
       });
     }
 
+    // Collapse / Expand All Telemetry Cards Toggle
+    if (this.dom.toggleAllCardsBtn) {
+      this.dom.toggleAllCardsBtn.addEventListener('click', () => {
+        const shouldCollapse = !this.areAllCardsCollapsed();
+        this.setAllCardsCollapsed(shouldCollapse);
+      });
+    }
+
+    // Individual Telemetry Card Collapse / Expand Toggles
+    document.addEventListener('click', (e) => {
+      const toggleEl = e.target.closest('[data-card-toggle]');
+      if (!toggleEl) return;
+      const cardKey = toggleEl.getAttribute('data-card-toggle');
+      if (cardKey && COLLAPSIBLE_CARD_KEYS.includes(cardKey)) {
+        this.toggleCardCollapse(cardKey);
+      }
+    });
+
     // Unit Segmented Control (km/h | mph)
     if (this.dom.unitKmhBtn) {
       this.dom.unitKmhBtn.addEventListener('click', () => this.setUnit('kmh'));
@@ -1042,6 +1084,59 @@ export class VelocityTelemetryApp {
     }
     if (this.dom.startStopLabel) {
       this.dom.startStopLabel.textContent = isActive ? 'Pause Tracking' : 'Start Tracking';
+    }
+  }
+
+  areAllCardsCollapsed() {
+    return COLLAPSIBLE_CARD_KEYS.every((key) => Boolean(this.collapsedCards[key]));
+  }
+
+  toggleCardCollapse(cardKey) {
+    if (!COLLAPSIBLE_CARD_KEYS.includes(cardKey)) return;
+    this.collapsedCards[cardKey] = !this.collapsedCards[cardKey];
+    safeSetStorage(STORAGE_KEYS.collapsedCards, JSON.stringify(this.collapsedCards));
+    this._syncCardCollapseUi();
+    if (!this.collapsedCards.sparkline) {
+      this._renderSnapshot(this.engine.getSnapshot(Date.now()));
+    }
+  }
+
+  setAllCardsCollapsed(collapsed) {
+    const targetState = Boolean(collapsed);
+    for (const key of COLLAPSIBLE_CARD_KEYS) {
+      this.collapsedCards[key] = targetState;
+    }
+    safeSetStorage(STORAGE_KEYS.collapsedCards, JSON.stringify(this.collapsedCards));
+    this._syncCardCollapseUi();
+    if (!targetState) {
+      this._renderSnapshot(this.engine.getSnapshot(Date.now()));
+    }
+  }
+
+  _syncCardCollapseUi() {
+    for (const key of COLLAPSIBLE_CARD_KEYS) {
+      const isCollapsed = Boolean(this.collapsedCards[key]);
+      const cardEl = document.querySelector(`[data-collapsible-card="${key}"]`);
+      if (cardEl) {
+        cardEl.classList.toggle('is-collapsed', isCollapsed);
+        const btn = cardEl.querySelector('.card-collapse-btn');
+        if (btn) {
+          btn.setAttribute('aria-expanded', String(!isCollapsed));
+        }
+      }
+    }
+
+    const allCollapsed = this.areAllCardsCollapsed();
+    if (this.dom.toggleAllCardsBtn) {
+      this.dom.toggleAllCardsBtn.setAttribute('aria-pressed', String(allCollapsed));
+    }
+    if (this.dom.toggleAllCardsIcon) {
+      this.dom.toggleAllCardsIcon.innerHTML = allCollapsed ? '&#9662;' : '&#9652;';
+    }
+    if (this.dom.toggleAllCardsLabel) {
+      this.dom.toggleAllCardsLabel.textContent = allCollapsed
+        ? 'Expand Cards'
+        : 'Collapse Cards';
     }
   }
 

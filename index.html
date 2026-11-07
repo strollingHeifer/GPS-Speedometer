@@ -95,6 +95,18 @@
         <span id="audio-mute-label">Chime On</span>
       </button>
 
+      <!-- Collapse / Expand All Telemetry Cards Toggle -->
+      <button
+        type="button"
+        id="toggle-all-cards-btn"
+        class="icon-btn"
+        aria-pressed="false"
+        title="Collapse or Expand All Telemetry Cards"
+      >
+        <span id="toggle-all-cards-icon" aria-hidden="true">&#9652;</span>
+        <span id="toggle-all-cards-label">Collapse Cards</span>
+      </button>
+
       <!-- 3-State Segmented Theme Switcher (System | Light | Dark) -->
       <div id="theme-switcher" class="segmented-theme" role="group" aria-label="Color Theme Mode">
         <button type="button" class="segmented-theme__btn" data-theme-opt="system" aria-pressed="true">System</button>
@@ -230,9 +242,9 @@
     <!-- Right / Telemetry Pane: Speed Threshold, Signal Confidence, 60s Sparkline, Session & Compass -->
     <section class="telemetry-pane" aria-label="Telemetry &amp; Threshold Controls">
       <!-- Card 1: Speed Limit Threshold Alert Configuration -->
-      <article id="threshold-card" class="m3-card">
+      <article id="threshold-card" class="m3-card" data-collapsible-card="threshold">
         <div class="m3-card__header">
-          <h2 class="m3-card__title">Speed Limit Threshold</h2>
+          <h2 class="m3-card__title" data-card-toggle="threshold">Speed Limit Threshold</h2>
           <div class="threshold-header-right">
             <span id="threshold-display-value" class="threshold-readout-pill tabular-nums">80 km/h</span>
             <label class="m3-switch" title="Enable or Disable Speed Limit Alert">
@@ -241,146 +253,204 @@
                 <span class="m3-switch__thumb"></span>
               </span>
             </label>
+            <button
+              type="button"
+              class="card-collapse-btn"
+              data-card-toggle="threshold"
+              aria-expanded="true"
+              aria-controls="threshold-card-body"
+              aria-label="Toggle Speed Limit Threshold card"
+              title="Collapse or expand card"
+            >
+              <span class="card-collapse-chevron" aria-hidden="true">&#9662;</span>
+            </button>
           </div>
         </div>
 
-        <!-- Quick-Preset M3 Filter Chips -->
-        <div id="threshold-presets-container" class="preset-chips-row" role="group" aria-label="Speed Limit Presets">
-          <button type="button" class="chip-btn" data-preset="30">30</button>
-          <button type="button" class="chip-btn" data-preset="50">50</button>
-          <button type="button" class="chip-btn is-active" data-preset="80">80</button>
-          <button type="button" class="chip-btn" data-preset="100">100</button>
-          <button type="button" class="chip-btn" data-preset="120">120</button>
-        </div>
+        <div id="threshold-card-body" class="m3-card__body">
+          <!-- Quick-Preset M3 Filter Chips -->
+          <div id="threshold-presets-container" class="preset-chips-row" role="group" aria-label="Speed Limit Presets">
+            <button type="button" class="chip-btn" data-preset="30">30</button>
+            <button type="button" class="chip-btn" data-preset="50">50</button>
+            <button type="button" class="chip-btn is-active" data-preset="80">80</button>
+            <button type="button" class="chip-btn" data-preset="100">100</button>
+            <button type="button" class="chip-btn" data-preset="120">120</button>
+          </div>
 
-        <!-- Fine-Tuning Slider + -5 / +5 Stepper Buttons -->
-        <div class="threshold-slider-row">
-          <button type="button" id="threshold-minus-btn" class="stepper-btn" aria-label="Decrease limit by 5">&minus;5</button>
-          <input
-            type="range"
-            id="threshold-slider"
-            min="10"
-            max="200"
-            step="1"
-            value="80"
-            aria-label="Speed Limit Threshold Slider"
-          />
-          <button type="button" id="threshold-plus-btn" class="stepper-btn" aria-label="Increase limit by 5">+5</button>
+          <!-- Fine-Tuning Slider + -5 / +5 Stepper Buttons -->
+          <div class="threshold-slider-row">
+            <button type="button" id="threshold-minus-btn" class="stepper-btn" aria-label="Decrease limit by 5">&minus;5</button>
+            <input
+              type="range"
+              id="threshold-slider"
+              min="10"
+              max="200"
+              step="1"
+              value="80"
+              aria-label="Speed Limit Threshold Slider"
+            />
+            <button type="button" id="threshold-plus-btn" class="stepper-btn" aria-label="Increase limit by 5">+5</button>
+          </div>
         </div>
       </article>
 
       <!-- Card 2: Signal Accuracy & Confidence Insights -->
-      <article id="confidence-card" class="m3-card">
+      <article id="confidence-card" class="m3-card" data-collapsible-card="confidence">
         <div class="m3-card__header">
-          <h2 class="m3-card__title">Signal Accuracy &amp; Confidence</h2>
-          <span id="confidence-tier-badge" class="confidence-tier-pill" data-tier="poor">Awaiting Fix</span>
+          <h2 class="m3-card__title" data-card-toggle="confidence">Signal Accuracy &amp; Confidence</h2>
+          <div class="card-header-actions">
+            <span id="confidence-tier-badge" class="confidence-tier-pill" data-tier="poor">Awaiting Fix</span>
+            <button
+              type="button"
+              class="card-collapse-btn"
+              data-card-toggle="confidence"
+              aria-expanded="true"
+              aria-controls="confidence-card-body"
+              aria-label="Toggle Signal Accuracy and Confidence card"
+              title="Collapse or expand card"
+            >
+              <span class="card-collapse-chevron" aria-hidden="true">&#9662;</span>
+            </button>
+          </div>
         </div>
 
-        <div class="confidence-bar-wrap">
-          <div class="confidence-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="confidence-progressbar">
-            <div id="confidence-progress-fill" class="confidence-bar-fill" data-tier="poor" style="width: 0%;"></div>
-          </div>
-          <span id="confidence-score-value" class="tabular-nums" style="font-weight: 700; font-size: 0.85rem;">0%</span>
-        </div>
-
-        <div class="telemetry-metrics-grid">
-          <div class="metric-tile">
-            <span class="metric-tile__label">Horizontal Uncertainty</span>
-            <span id="metric-accuracy-val" class="metric-tile__value tabular-nums">&pm; -- m</span>
-          </div>
-
-          <div class="metric-tile">
-            <span class="metric-tile__label">Fix Update Cadence</span>
-            <span id="metric-hz-val" class="metric-tile__value tabular-nums">0.0 Hz</span>
-          </div>
-
-          <div class="metric-tile">
-            <span class="metric-tile__label">Fix Staleness / Age</span>
-            <span id="metric-age-val" class="metric-tile__value tabular-nums">-- s</span>
-          </div>
-
-          <div class="metric-tile">
-            <span class="metric-tile__label">Velocity Source</span>
-            <span id="metric-source-val" class="metric-tile__value">Awaiting Fix</span>
-          </div>
-
-          <div class="metric-tile metric-tile--wide">
-            <div class="metric-tile__label">
-              <span>Inferred GNSS Lock State</span>
+        <div id="confidence-card-body" class="m3-card__body">
+          <div class="confidence-bar-wrap">
+            <div class="confidence-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="confidence-progressbar">
+              <div id="confidence-progress-fill" class="confidence-bar-fill" data-tier="poor" style="width: 0%;"></div>
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span id="metric-satellites-val" class="metric-tile__value tabular-nums" style="font-size: 0.85rem;">Awaiting Fix</span>
+            <span id="confidence-score-value" class="tabular-nums" style="font-weight: 700; font-size: 0.85rem;">0%</span>
+          </div>
+
+          <div class="telemetry-metrics-grid">
+            <div class="metric-tile">
+              <span class="metric-tile__label">Horizontal Uncertainty</span>
+              <span id="metric-accuracy-val" class="metric-tile__value tabular-nums">&pm; -- m</span>
+            </div>
+
+            <div class="metric-tile">
+              <span class="metric-tile__label">Fix Update Cadence</span>
+              <span id="metric-hz-val" class="metric-tile__value tabular-nums">0.0 Hz</span>
+            </div>
+
+            <div class="metric-tile">
+              <span class="metric-tile__label">Fix Staleness / Age</span>
+              <span id="metric-age-val" class="metric-tile__value tabular-nums">-- s</span>
+            </div>
+
+            <div class="metric-tile">
+              <span class="metric-tile__label">Velocity Source</span>
+              <span id="metric-source-val" class="metric-tile__value">Awaiting Fix</span>
+            </div>
+
+            <div class="metric-tile metric-tile--wide">
+              <div class="metric-tile__label">
+                <span>Inferred GNSS Lock State</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="metric-satellites-val" class="metric-tile__value tabular-nums" style="font-size: 0.85rem;">Awaiting Fix</span>
+              </div>
             </div>
           </div>
         </div>
       </article>
 
       <!-- Card 3: 60-Second Live Speed Sparkline -->
-      <article id="sparkline-card" class="m3-card">
+      <article id="sparkline-card" class="m3-card" data-collapsible-card="sparkline">
         <div class="m3-card__header">
-          <h2 class="m3-card__title">60s Live Speed Trace</h2>
-          <div class="sparkline-legend tabular-nums">
-            <span>Now: <strong id="sparkline-current-val">0.0</strong></span>
-            <span>Peak: <strong id="sparkline-peak-val">0.0</strong></span>
-            <span>Limit: <strong id="sparkline-limit-val">80</strong></span>
+          <h2 class="m3-card__title" data-card-toggle="sparkline">60s Live Speed Trace</h2>
+          <div class="card-header-actions">
+            <div class="sparkline-legend tabular-nums">
+              <span>Now: <strong id="sparkline-current-val">0.0</strong></span>
+              <span>Peak: <strong id="sparkline-peak-val">0.0</strong></span>
+              <span>Limit: <strong id="sparkline-limit-val">80</strong></span>
+            </div>
+            <button
+              type="button"
+              class="card-collapse-btn"
+              data-card-toggle="sparkline"
+              aria-expanded="true"
+              aria-controls="sparkline-card-body"
+              aria-label="Toggle 60s Live Speed Trace card"
+              title="Collapse or expand card"
+            >
+              <span class="card-collapse-chevron" aria-hidden="true">&#9662;</span>
+            </button>
           </div>
         </div>
 
-        <div class="sparkline-canvas-wrap">
-          <canvas id="sparkline-canvas" aria-label="Rolling 60-second velocity sparkline chart"></canvas>
+        <div id="sparkline-card-body" class="m3-card__body">
+          <div class="sparkline-canvas-wrap">
+            <canvas id="sparkline-canvas" aria-label="Rolling 60-second velocity sparkline chart"></canvas>
+          </div>
         </div>
       </article>
 
       <!-- Card 4: Session Statistics & Compass / Altitude -->
-      <article id="session-compass-card" class="m3-card">
+      <article id="session-compass-card" class="m3-card" data-collapsible-card="session">
         <div class="m3-card__header">
-          <h2 class="m3-card__title">Session &amp; Orientation</h2>
-          <span id="stat-elapsed" class="threshold-readout-pill tabular-nums">00:00</span>
+          <h2 class="m3-card__title" data-card-toggle="session">Session &amp; Orientation</h2>
+          <div class="card-header-actions">
+            <span id="stat-elapsed" class="threshold-readout-pill tabular-nums">00:00</span>
+            <button
+              type="button"
+              class="card-collapse-btn"
+              data-card-toggle="session"
+              aria-expanded="true"
+              aria-controls="session-card-body"
+              aria-label="Toggle Session and Orientation card"
+              title="Collapse or expand card"
+            >
+              <span class="card-collapse-chevron" aria-hidden="true">&#9662;</span>
+            </button>
+          </div>
         </div>
 
-        <div class="session-compass-layout">
-          <div class="session-stats-grid">
-            <div class="metric-tile">
-              <span class="metric-tile__label">Max Speed</span>
-              <span id="stat-max-speed" class="metric-tile__value tabular-nums">0.0 km/h</span>
+        <div id="session-card-body" class="m3-card__body">
+          <div class="session-compass-layout">
+            <div class="session-stats-grid">
+              <div class="metric-tile">
+                <span class="metric-tile__label">Max Speed</span>
+                <span id="stat-max-speed" class="metric-tile__value tabular-nums">0.0 km/h</span>
+              </div>
+
+              <div class="metric-tile">
+                <span class="metric-tile__label">Avg Speed</span>
+                <span id="stat-avg-speed" class="metric-tile__value tabular-nums">0.0 km/h</span>
+              </div>
+
+              <div class="metric-tile">
+                <span class="metric-tile__label">Trip Distance</span>
+                <span id="stat-distance" class="metric-tile__value tabular-nums">0.00 km</span>
+              </div>
+
+              <div class="metric-tile">
+                <span class="metric-tile__label">Altitude (MSL/WGS84)</span>
+                <span id="stat-altitude" class="metric-tile__value tabular-nums">-- m <small id="stat-alt-acc" style="font-weight: 500; opacity: 0.75;"></small></span>
+              </div>
             </div>
 
-            <div class="metric-tile">
-              <span class="metric-tile__label">Avg Speed</span>
-              <span id="stat-avg-speed" class="metric-tile__value tabular-nums">0.0 km/h</span>
+            <!-- Interactive SVG Compass Rose -->
+            <div class="compass-widget" aria-label="Course Heading Compass">
+              <svg id="compass-svg" class="compass-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="44" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="2" />
+                <g id="compass-dial" class="compass-dial-group">
+                  <text x="50" y="16" text-anchor="middle" fill="var(--md-sys-color-error)" font-size="11" font-weight="800">N</text>
+                  <text x="86" y="54" text-anchor="middle" fill="var(--md-sys-color-on-surface-variant)" font-size="9" font-weight="700">E</text>
+                  <text x="50" y="91" text-anchor="middle" fill="var(--md-sys-color-on-surface-variant)" font-size="9" font-weight="700">S</text>
+                  <text x="14" y="54" text-anchor="middle" fill="var(--md-sys-color-on-surface-variant)" font-size="9" font-weight="700">W</text>
+                  <!-- North Pointer Arrow -->
+                  <polygon points="50,22 44,50 50,44 56,50" fill="var(--md-sys-color-primary)" />
+                  <polygon points="50,78 44,50 50,56 56,50" fill="var(--md-sys-color-outline)" opacity="0.5" />
+                  <circle cx="50" cy="50" r="4" fill="var(--md-sys-color-on-surface)" />
+                </g>
+              </svg>
+              <div class="compass-readout tabular-nums">
+                <span id="compass-deg-val">---&deg;</span>
+                <span id="compass-cardinal-val">--</span>
+              </div>
+              <span id="compass-source-badge" class="compass-source-badge">No Heading</span>
             </div>
-
-            <div class="metric-tile">
-              <span class="metric-tile__label">Trip Distance</span>
-              <span id="stat-distance" class="metric-tile__value tabular-nums">0.00 km</span>
-            </div>
-
-            <div class="metric-tile">
-              <span class="metric-tile__label">Altitude (MSL/WGS84)</span>
-              <span id="stat-altitude" class="metric-tile__value tabular-nums">-- m <small id="stat-alt-acc" style="font-weight: 500; opacity: 0.75;"></small></span>
-            </div>
-          </div>
-
-          <!-- Interactive SVG Compass Rose -->
-          <div class="compass-widget" aria-label="Course Heading Compass">
-            <svg id="compass-svg" class="compass-svg" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="44" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="2" />
-              <g id="compass-dial" class="compass-dial-group">
-                <text x="50" y="16" text-anchor="middle" fill="var(--md-sys-color-error)" font-size="11" font-weight="800">N</text>
-                <text x="86" y="54" text-anchor="middle" fill="var(--md-sys-color-on-surface-variant)" font-size="9" font-weight="700">E</text>
-                <text x="50" y="91" text-anchor="middle" fill="var(--md-sys-color-on-surface-variant)" font-size="9" font-weight="700">S</text>
-                <text x="14" y="54" text-anchor="middle" fill="var(--md-sys-color-on-surface-variant)" font-size="9" font-weight="700">W</text>
-                <!-- North Pointer Arrow -->
-                <polygon points="50,22 44,50 50,44 56,50" fill="var(--md-sys-color-primary)" />
-                <polygon points="50,78 44,50 50,56 56,50" fill="var(--md-sys-color-outline)" opacity="0.5" />
-                <circle cx="50" cy="50" r="4" fill="var(--md-sys-color-on-surface)" />
-              </g>
-            </svg>
-            <div class="compass-readout tabular-nums">
-              <span id="compass-deg-val">---&deg;</span>
-              <span id="compass-cardinal-val">--</span>
-            </div>
-            <span id="compass-source-badge" class="compass-source-badge">No Heading</span>
           </div>
         </div>
       </article>
