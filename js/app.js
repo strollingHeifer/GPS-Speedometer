@@ -73,8 +73,8 @@ export class VelocityTelemetryApp {
         ? savedThreshMps
         : 80 / MPS_TO_KMH; // Default 80 km/h (22.222 m/s)
 
-    const savedEnabled = safeGetStorage(STORAGE_KEYS.thresholdEnabled, 'true');
-    this.thresholdEnabled = savedEnabled !== 'false';
+    const savedEnabled = safeGetStorage(STORAGE_KEYS.thresholdEnabled, 'false');
+    this.thresholdEnabled = savedEnabled === 'true';
 
     const savedMuted = safeGetStorage(STORAGE_KEYS.audioMuted, 'false') === 'true';
 
