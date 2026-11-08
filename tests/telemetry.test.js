@@ -1,5 +1,5 @@
 /**
- * @fileoverview Automated Unit Test Suite for Mobile Velocity & GNSS Telemetry Engine,
+ * @fileoverview Automated Unit Test Suite for GPS Speedometer Telemetry Engine,
  * Multi-Modal Threshold Alert Hysteresis, Signal Confidence Scoring, and Simulation.
  * Run with: node --test tests/telemetry.test.js
  */
@@ -590,9 +590,14 @@ describe('Charts Geometry, Auto-Ranging Scales & Manifest/DOM Integrity', () => 
       );
     }
 
+    assert.ok(html.includes('<title>GPS Speedometer</title>'));
+    assert.ok(html.includes('<h1 class="top-app-bar__title">GPS Speedometer</h1>'));
+
     const manifest = JSON.parse(
       fs.readFileSync(path.join(rootDir, 'manifest.webmanifest'), 'utf8')
     );
+    assert.equal(manifest.name, 'GPS Speedometer');
+    assert.equal(manifest.short_name, 'GPS Speedometer');
     assert.equal(manifest.display, 'standalone');
     assert.equal(manifest.orientation, 'any');
     for (const icon of manifest.icons) {

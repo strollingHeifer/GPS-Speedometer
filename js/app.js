@@ -1,5 +1,5 @@
 /**
- * @fileoverview Main Application Controller for the Mobile Velocity & GNSS Telemetry PWA.
+ * @fileoverview Main Application Controller for the GPS Speedometer PWA.
  * Coordinates M3 Expressive theming (System/Light/Dark), Geolocation watchPosition lifecycle,
  * Hybrid Telemetry Engine, Multi-Modal Speed Threshold Alerts, Screen Wake Lock,
  * SVG Radial Gauge & High-DPI 60s Sparkline, and Hidden-by-Default Developer Simulation Mode.

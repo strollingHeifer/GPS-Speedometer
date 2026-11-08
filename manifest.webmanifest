@@ -1,7 +1,7 @@
 {
-  "name": "Velocity & GNSS Telemetry Cockpit",
-  "short_name": "GNSS Speed",
-  "description": "Material Design 3 Expressive real-time mobile velocity, GNSS Doppler accuracy confidence, and speed limit alert instrument.",
+  "name": "GPS Speedometer",
+  "short_name": "GPS Speedometer",
+  "description": "GPS Speedometer — Material Design 3 Expressive real-time GPS speedometer, accuracy confidence, and speed limit alert instrument.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

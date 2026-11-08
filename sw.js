@@ -1,6 +1,6 @@
-// sw.js — Offline-First Service Worker for Mobile Velocity & GNSS Telemetry PWA
+// sw.js — Offline-First Service Worker for GPS Speedometer PWA
 
-const CACHE_NAME = 'gnss-velocity-m3-v1';
+const CACHE_NAME = 'gps-speedometer-m3-v1';
 const APP_SHELL_ASSETS = [
   './',
   './index.html',
