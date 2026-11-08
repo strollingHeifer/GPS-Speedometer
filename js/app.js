@@ -545,9 +545,12 @@ export class VelocityTelemetryApp {
     if (this.dom.confidenceTierBadge) {
       if (!hasFix) {
         this.dom.confidenceTierBadge.textContent = 'Awaiting Fix';
+        this.dom.confidenceTierBadge.title = 'Awaiting GNSS Fix';
         this.dom.confidenceTierBadge.setAttribute('data-tier', 'poor');
       } else {
-        this.dom.confidenceTierBadge.textContent = snapshot.confidence.label;
+        this.dom.confidenceTierBadge.textContent =
+          snapshot.confidence.shortLabel || snapshot.confidence.label;
+        this.dom.confidenceTierBadge.title = snapshot.confidence.label;
         this.dom.confidenceTierBadge.setAttribute('data-tier', snapshot.confidence.tier);
       }
     }

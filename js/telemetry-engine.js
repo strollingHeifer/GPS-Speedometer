@@ -88,7 +88,7 @@ export function haversineMeters(lat1, lon1, lat2, lon2) {
  */
 export function evaluateSignalConfidence({ accuracyMeters, updateHz, fixAgeSeconds, speedSource }) {
   if (!Number.isFinite(accuracyMeters) || fixAgeSeconds > 6) {
-    return { score: 12, tier: 'poor', label: 'Poor / Stale Fix' };
+    return { score: 12, tier: 'poor', label: 'Poor / Stale Fix', shortLabel: 'Stale Fix' };
   }
   const accScore = Math.max(0, Math.min(100, 100 - (accuracyMeters - 3) * 2.8));
   const hzScore = Math.max(0, Math.min(100, (updateHz / 1.0) * 100));
@@ -100,17 +100,21 @@ export function evaluateSignalConfidence({ accuracyMeters, updateHz, fixAgeSecon
 
   let tier = 'poor';
   let label = 'Poor Signal';
+  let shortLabel = 'Poor Signal';
   if (accuracyMeters <= 5.5 && updateHz >= 0.75 && fixAgeSeconds <= 2.5) {
     tier = 'excellent';
     label = 'Excellent (High Precision)';
+    shortLabel = 'Excellent';
   } else if (accuracyMeters <= 12 && updateHz >= 0.35 && fixAgeSeconds <= 3.5) {
     tier = 'good';
     label = 'Good (Reliable GNSS)';
+    shortLabel = 'Good Signal';
   } else if (accuracyMeters <= 30 && fixAgeSeconds <= 5.0) {
     tier = 'fair';
     label = 'Fair (Moderate Accuracy)';
+    shortLabel = 'Fair Signal';
   }
-  return { score, tier, label };
+  return { score, tier, label, shortLabel };
 }
 
 /**

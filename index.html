@@ -321,7 +321,7 @@
             <div class="confidence-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="confidence-progressbar">
               <div id="confidence-progress-fill" class="confidence-bar-fill" data-tier="poor" style="width: 0%;"></div>
             </div>
-            <span id="confidence-score-value" class="tabular-nums" style="font-weight: 700; font-size: 0.85rem;">0%</span>
+            <span id="confidence-score-value" class="confidence-score-value tabular-nums">0%</span>
           </div>
 
           <div class="telemetry-metrics-grid">
@@ -346,12 +346,8 @@
             </div>
 
             <div class="metric-tile metric-tile--wide">
-              <div class="metric-tile__label">
-                <span>Inferred GNSS Lock State</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span id="metric-satellites-val" class="metric-tile__value tabular-nums" style="font-size: 0.85rem;">Awaiting Fix</span>
-              </div>
+              <span class="metric-tile__label">Inferred GNSS Lock State</span>
+              <span id="metric-satellites-val" class="metric-tile__value tabular-nums">Awaiting Fix</span>
             </div>
           </div>
         </div>

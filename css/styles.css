@@ -217,14 +217,16 @@ body {
   justify-content: center;
   gap: 6px;
   height: 36px;
-  min-width: 108px;
-  padding: 0 12px;
+  width: 118px;
+  min-width: 118px;
+  padding: 0 10px;
   border-radius: var(--md-sys-shape-corner-full);
   border: 1px solid var(--md-sys-color-outline-variant);
   font-size: 0.78rem;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
+  flex-shrink: 0;
   background-color: var(--md-sys-color-tile-surface, var(--md-sys-color-surface-container-low));
   color: var(--md-sys-color-on-surface-variant);
 }
@@ -251,6 +253,7 @@ body {
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
+  flex-shrink: 0;
   cursor: pointer;
   transition: all var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
 }
@@ -268,7 +271,17 @@ body {
 }
 
 #audio-mute-btn {
-  min-width: 104px;
+  width: 120px;
+  min-width: 120px;
+  padding: 0 10px;
+}
+
+#audio-mute-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  flex-shrink: 0;
 }
 
 #audio-mute-btn[aria-pressed="true"] {
@@ -278,7 +291,17 @@ body {
 }
 
 #toggle-all-cards-btn {
-  min-width: 134px;
+  width: 144px;
+  min-width: 144px;
+  padding: 0 10px;
+}
+
+#toggle-all-cards-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  flex-shrink: 0;
 }
 
 #toggle-all-cards-btn[aria-pressed="true"] {
@@ -460,6 +483,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .card-collapse-btn {
@@ -954,9 +978,19 @@ input[type="range"] {
 
 /* Card 2: Signal Accuracy & Confidence */
 .confidence-tier-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 106px;
+  min-width: 106px;
+  height: 28px;
   font-size: 0.76rem;
   font-weight: 700;
-  padding: 4px 10px;
+  line-height: 1;
+  padding: 0 10px;
+  white-space: nowrap;
+  text-align: center;
+  flex-shrink: 0;
   border-radius: var(--md-sys-shape-corner-full);
   background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface-variant);
@@ -987,6 +1021,15 @@ input[type="range"] {
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
+}
+
+.confidence-score-value {
+  font-weight: 700;
+  font-size: 0.85rem;
+  min-width: 38px;
+  text-align: right;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .confidence-bar-track {
@@ -1021,40 +1064,44 @@ input[type="range"] {
 
 .telemetry-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
 .metric-tile {
+  min-width: 0;
   background-color: var(--md-sys-color-tile-surface, var(--md-sys-color-surface-container-low));
   padding: 10px 12px;
   border-radius: var(--md-sys-shape-corner-medium);
   border: 1px solid var(--md-sys-color-outline-variant);
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2px;
 }
 
 .metric-tile--wide {
   grid-column: 1 / -1;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .metric-tile__label {
   font-size: 0.72rem;
   font-weight: 600;
+  line-height: 1.25;
   color: var(--md-sys-color-on-surface-variant);
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .metric-tile__value {
   font-size: 0.95rem;
   font-weight: 700;
+  line-height: 1.25;
   color: var(--md-sys-color-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .info-trigger-btn {
