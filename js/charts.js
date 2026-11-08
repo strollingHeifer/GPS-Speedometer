@@ -27,11 +27,14 @@ export function describeSvgArc(cx, cy, radius, startAngleDeg, endAngleDeg) {
 
 /**
  * Chooses an auto-ranging ceiling scale based on current unit, current speed, and active threshold.
- * km/h scales: [60, 120, 180, 240]
- * mph scales:  [40, 80, 120, 160]
+ * km/h scales: [60, 120, 180, 240, 360, 600, 1200]
+ * mph scales:  [40, 80, 120, 160, 240, 400, 800]
  */
 export function selectGaugeCeiling(speedInUnit, thresholdInUnit, unit = 'kmh') {
-  const scales = unit === 'mph' ? [40, 80, 120, 160] : [60, 120, 180, 240];
+  const scales =
+    unit === 'mph'
+      ? [40, 80, 120, 160, 240, 400, 800]
+      : [60, 120, 180, 240, 360, 600, 1200];
   const reference = Math.max(speedInUnit || 0, (thresholdInUnit || 0) * 1.05);
   for (const ceiling of scales) {
     if (reference <= ceiling * 0.88) {
@@ -133,7 +136,7 @@ export class RadialGaugeView {
     if (!this.ticksGroup) return;
     this.ticksGroup.innerHTML = '';
 
-    const majorSteps = 6; // e.g., 0, 20, 40, 60, 80, 100, 120
+    const majorSteps = ceiling % 6 === 0 ? 6 : 4;
     const minorPerMajor = 4;
     const totalTicks = majorSteps * minorPerMajor;
 
@@ -163,7 +166,10 @@ export class RadialGaugeView {
         text.setAttribute('y', labelPos.y.toFixed(2));
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('dominant-baseline', 'central');
-        text.setAttribute('class', 'gauge-tick-label');
+        text.setAttribute(
+          'class',
+          labelVal >= 1000 ? 'gauge-tick-label gauge-tick-label--compact' : 'gauge-tick-label'
+        );
         text.textContent = String(labelVal);
         this.ticksGroup.appendChild(text);
       }
@@ -319,13 +325,6 @@ export class SparklineCanvasView {
     const outlineVariant = this._resolveCssColor('--md-sys-color-outline-variant', '#bfc8ca');
     const onSurfaceVariant = this._resolveCssColor('--md-sys-color-on-surface-variant', '#3f484a');
 
-    const padLeft = 34;
-    const padRight = 10;
-    const padTop = 12;
-    const padBottom = 20;
-    const plotW = cssWidth - padLeft - padRight;
-    const plotH = cssHeight - padTop - padBottom;
-
     // Filter samples to last 60s
     const startMs = nowMs - this.windowMs;
     const points = [];
@@ -346,6 +345,13 @@ export class SparklineCanvasView {
       thresholdEnabled && thresholdInUnit > 0 ? thresholdInUnit * 1.18 : 0
     );
     const yCeiling = Math.ceil(maxRef / 10) * 10;
+
+    const padLeft = yCeiling >= 1000 ? 40 : 34;
+    const padRight = 10;
+    const padTop = 12;
+    const padBottom = 20;
+    const plotW = cssWidth - padLeft - padRight;
+    const plotH = cssHeight - padTop - padBottom;
 
     const toX = (ts) => {
       const clampedTs = Math.max(startMs, Math.min(nowMs, ts));

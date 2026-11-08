@@ -553,16 +553,56 @@ describe('Simulator, 5-Tap Unlock & WakeLockManager', () => {
 });
 
 describe('Charts Geometry, Auto-Ranging Scales & Manifest/DOM Integrity', () => {
-  it('selects auto-ranging gauge ceiling scales for km/h (60/120/180/240) and mph (40/80/120/160)', () => {
+  it('selects auto-ranging gauge ceiling scales up to 1200 km/h and 800 mph for ground, rail, and aviation', () => {
     assert.equal(selectGaugeCeiling(25, 30, 'kmh'), 60);
     assert.equal(selectGaugeCeiling(55, 80, 'kmh'), 120);
     assert.equal(selectGaugeCeiling(130, 100, 'kmh'), 180);
     assert.equal(selectGaugeCeiling(190, 120, 'kmh'), 240);
+    assert.equal(selectGaugeCeiling(280, 0, 'kmh'), 360);
+    assert.equal(selectGaugeCeiling(480, 0, 'kmh'), 600);
+    assert.equal(selectGaugeCeiling(950, 0, 'kmh'), 1200);
+    assert.equal(selectGaugeCeiling(1180, 0, 'kmh'), 1200);
 
     assert.equal(selectGaugeCeiling(15, 25, 'mph'), 40);
     assert.equal(selectGaugeCeiling(45, 55, 'mph'), 80);
     assert.equal(selectGaugeCeiling(85, 65, 'mph'), 120);
     assert.equal(selectGaugeCeiling(130, 75, 'mph'), 160);
+    assert.equal(selectGaugeCeiling(180, 0, 'mph'), 240);
+    assert.equal(selectGaugeCeiling(310, 0, 'mph'), 400);
+    assert.equal(selectGaugeCeiling(590, 0, 'mph'), 800);
+    assert.equal(selectGaugeCeiling(745, 0, 'mph'), 800);
+  });
+
+  it('locks onto sustained aviation speeds (~1100 km/h) when starting tracking mid-flight with cabin GPS accuracy > 15m', () => {
+    const engine = new TelemetryEngine();
+    // Fix 1: initial position before Doppler lock (speed: null, accuracy: 24m)
+    engine.processPosition(
+      {
+        coords: { latitude: 48.0, longitude: 11.0, accuracy: 24.0, speed: null, heading: 90 },
+        timestamp: 1000,
+      },
+      1000
+    );
+    // Fix 2 (t=2s): Doppler locks at 305 m/s (1098 km/h) with cabin accuracy 24m -> held as candidate on first jump
+    const snap2 = engine.processPosition(
+      {
+        coords: { latitude: 48.0, longitude: 11.0041, accuracy: 24.0, speed: 305.0, heading: 90 },
+        timestamp: 2000,
+      },
+      2000
+    );
+    assert.equal(snap2.spikeRejected, true);
+
+    // Fix 3 (t=3s): Consecutive fix confirms sustained 305.5 m/s (~1100 km/h) -> immediately locks onto flight speed
+    const snap3 = engine.processPosition(
+      {
+        coords: { latitude: 48.0, longitude: 11.0082, accuracy: 24.0, speed: 305.5, heading: 90 },
+        timestamp: 3000,
+      },
+      3000
+    );
+    assert.equal(snap3.spikeRejected, false);
+    assert.ok(Math.abs(snap3.speedMps - 305.5) < 0.1);
   });
 
   it('computes polarToCartesian and describeSvgArc for 240° sweep', () => {

@@ -495,6 +495,10 @@ export class VelocityTelemetryApp {
     }
     if (this.dom.heroSpeedValue) {
       this.dom.heroSpeedValue.textContent = speedInUnit.toFixed(1);
+      this.dom.heroSpeedValue.setAttribute(
+        'data-digits',
+        speedInUnit >= 999.95 ? '4' : speedInUnit >= 99.95 ? '3' : '2'
+      );
     }
     if (this.dom.heroSpeedUnit) {
       this.dom.heroSpeedUnit.textContent = unitLabel;

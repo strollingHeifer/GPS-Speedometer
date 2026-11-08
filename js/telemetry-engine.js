@@ -197,6 +197,7 @@ export class TelemetryEngine {
     this.accuracyMeters = null;
     this.isStale = false;
     this.spikeRejected = false;
+    this.lastRejectedCandidate = null;
     this.history = [];
     return this.getSnapshot(nowMs);
   }
@@ -212,6 +213,7 @@ export class TelemetryEngine {
     this.isSimulated = false;
     this.isStale = false;
     this.spikeRejected = false;
+    this.lastRejectedCandidate = null;
     return this.getSnapshot(nowMs);
   }
 
@@ -331,17 +333,55 @@ export class TelemetryEngine {
     }
 
     // 2. Outlier & Multipath Spike Filter (> 15 m/s^2 with horizontal accuracy > 15m)
-    // Evaluated against rawSpeedMps and time since last accepted fix before EMA smoothing
+    // Evaluated against rawSpeedMps and time since last accepted fix before EMA smoothing.
+    // If two consecutive fixes confirm a consistent high velocity (within 15 m/s^2 of each other),
+    // accept it as a sustained high-speed lock (e.g., mid-flight aircraft acquisition).
+    let confirmedSustainedHighSpeed = false;
     if (this.lastFix && acceptedDtSeconds > 0 && !isBackgroundGap) {
       const accelMps2 = Math.abs(rawSpeedMps - this.currentSpeedMps) / acceptedDtSeconds;
       if (accelMps2 > 15 && currAcc > 15) {
-        this.spikeRejected = true;
+        const cand = this.lastRejectedCandidate;
+        const candDt = cand ? (fixTimeMs - cand.timestamp) / 1000 : 0;
+        let speedFromCand = rawSpeedMps;
+        if (
+          !hasDoppler &&
+          cand &&
+          candDt > 0 &&
+          hasLatLon &&
+          Number.isFinite(cand.latitude) &&
+          Number.isFinite(cand.longitude)
+        ) {
+          speedFromCand =
+            haversineMeters(cand.latitude, cand.longitude, coords.latitude, coords.longitude) /
+            candDt;
+        }
+        if (
+          cand &&
+          candDt > 0 &&
+          candDt <= 15 &&
+          Math.abs(speedFromCand - cand.speedMps) / candDt <= 15
+        ) {
+          rawSpeedMps = speedFromCand;
+          confirmedSustainedHighSpeed = true;
+          this.spikeRejected = false;
+          this.lastRejectedCandidate = null;
+        } else {
+          this.spikeRejected = true;
+          this.lastRejectedCandidate = {
+            speedMps: rawSpeedMps,
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            timestamp: fixTimeMs,
+          };
+        }
+      } else {
+        this.lastRejectedCandidate = null;
       }
     }
 
     let candidateSpeedMps = this.currentSpeedMps;
     if (!this.spikeRejected) {
-      if (hasDoppler) {
+      if (hasDoppler || confirmedSustainedHighSpeed) {
         candidateSpeedMps = rawSpeedMps;
       } else if (this.lastFix && acceptedDtSeconds > 0 && !isBackgroundGap) {
         const alpha = 0.35;

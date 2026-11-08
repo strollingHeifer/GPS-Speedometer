@@ -684,6 +684,10 @@ body {
   font-weight: 600;
 }
 
+.gauge-tick-label--compact {
+  font-size: 8.5px;
+}
+
 .hero-card.is-over-limit .gauge-tick-label,
 .hero-card.is-over-limit .gauge-tick-major {
   fill: var(--md-sys-color-on-error-container);
@@ -733,8 +737,13 @@ body {
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--md-sys-color-on-surface);
-  max-width: 62%;
+  max-width: 68%;
+  white-space: nowrap;
   text-align: center;
+}
+
+.hero-speed-value[data-digits="4"] {
+  font-size: clamp(1.9rem, 5.6vw, 2.45rem);
 }
 
 .hero-card.is-over-limit .hero-speed-value {
