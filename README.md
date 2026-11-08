@@ -1,12 +1,12 @@
 # GPS Speedometer
 
-A responsive, offline-capable **GPS Speedometer** Progressive Web App (PWA) designed with Material Design 3 Expressive styling.
+A responsive, offline-capable GPS Speedometer Progressive Web App (PWA) designed with Material Design 3 Expressive styling.
 
-Built as a **100% standalone, zero-dependency web application** using pure HTML5, CSS3, and vanilla ES2022 JavaScript. No frameworks, bundlers, or build steps required.
+Built as a **100% standalone, zero-dependency web application** using pure HTML5, CSS3, and vanilla ES2022 JavaScript. No frameworks, bundlers, or build steps required. As a web app, it also works without any installation required.
 
 ## Features
 
-- **Real-Time Speedometer (`km/h` & `mph`)**: 240° auto-ranging SVG radial gauge and high-contrast digital readout
+- **Real-Time Speedometer** (`km/h` & `mph`): 240° auto-ranging SVG radial gauge and high-contrast digital readout
 - **Hybrid Velocity Engine**: Prioritizes hardware GNSS Doppler velocity (`coords.speed`) and falls back to accuracy-gated Haversine distance calculation with exponential smoothing and multipath spike rejection
 - **Signal Accuracy & Confidence**: Real-time confidence scoring (`0–100%`), horizontal uncertainty, fix cadence (`Hz`), fix age, and inferred GNSS lock state
 - **Speed Limit Alerts**: Configurable threshold with visual and audio alerts as well as haptic feedback
