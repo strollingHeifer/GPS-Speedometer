@@ -358,11 +358,6 @@
         <div class="m3-card__header">
           <h2 class="m3-card__title" data-card-toggle="sparkline">60s Live Speed Trace</h2>
           <div class="card-header-actions">
-            <div class="sparkline-legend tabular-nums">
-              <span>Now: <strong id="sparkline-current-val">0.0</strong></span>
-              <span>Peak: <strong id="sparkline-peak-val">0.0</strong></span>
-              <span>Limit: <strong id="sparkline-limit-val">80</strong></span>
-            </div>
             <button
               type="button"
               class="card-collapse-btn"
@@ -378,6 +373,11 @@
         </div>
 
         <div id="sparkline-card-body" class="m3-card__body">
+          <div class="sparkline-legend tabular-nums">
+            <span class="sparkline-legend__item">Now: <strong id="sparkline-current-val">0.0 km/h</strong></span>
+            <span class="sparkline-legend__item">Peak: <strong id="sparkline-peak-val">0.0 km/h</strong></span>
+            <span class="sparkline-legend__item">Limit: <strong id="sparkline-limit-val">80 km/h</strong></span>
+          </div>
           <div class="sparkline-canvas-wrap">
             <canvas id="sparkline-canvas" aria-label="Rolling 60-second velocity sparkline chart"></canvas>
           </div>

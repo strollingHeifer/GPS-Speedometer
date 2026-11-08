@@ -472,6 +472,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
 .m3-card__title[data-card-toggle] {
@@ -871,6 +872,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .threshold-readout-pill {
@@ -878,6 +880,7 @@ body {
   font-size: 0.9rem;
   font-weight: 700;
   padding: 4px 10px;
+  white-space: nowrap;
   border-radius: var(--md-sys-shape-corner-medium);
   background-color: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
@@ -1121,10 +1124,27 @@ input[type="range"] {
 
 /* Card 3: 60-Second Sparkline */
 .sparkline-legend {
-  display: flex;
-  gap: 12px;
-  font-size: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 0.76rem;
   color: var(--md-sys-color-on-surface-variant);
+}
+
+.sparkline-legend__item {
+  background-color: var(--md-sys-color-tile-surface, var(--md-sys-color-surface-container-low));
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  padding: 5px 8px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sparkline-legend__item strong {
+  color: var(--md-sys-color-on-surface);
 }
 
 .sparkline-canvas-wrap {
