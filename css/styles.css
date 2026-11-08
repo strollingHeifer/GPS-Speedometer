@@ -403,6 +403,18 @@ body {
   border-color: var(--md-sys-color-primary);
 }
 
+#demo-stop-btn {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  border-color: var(--md-sys-color-error);
+  font-weight: 700;
+}
+
+#demo-stop-btn:hover {
+  background-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+}
+
 .demo-bar__sliders {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

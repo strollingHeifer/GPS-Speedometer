@@ -522,14 +522,14 @@ describe('Simulator, 5-Tap Unlock & WakeLockManager', () => {
     assert.equal(isDemoUnlockedByUrl('?unit=mph'), false);
   });
 
-  it('generates valid simulated positions across all 5 scenarios and degrades safely for WakeLock in Node', async () => {
+  it('generates valid simulated positions across all 6 scenarios (including airplane) and degrades safely for WakeLock in Node', async () => {
     const positions = [];
     const sim = new TelemetrySimulator({
       onPosition: (pos) => positions.push(pos),
     });
 
     sim.setThresholdMps(25.0);
-    for (const scenario of ['city', 'threshold', 'highway', 'tunnel', 'manual']) {
+    for (const scenario of ['city', 'threshold', 'highway', 'airplane', 'tunnel', 'manual']) {
       sim.scenario = scenario;
       sim.startTimeMs = 10000;
       sim.lastStepTimeMs = 10000;
@@ -540,6 +540,9 @@ describe('Simulator, 5-Tap Unlock & WakeLockManager', () => {
       if (scenario === 'tunnel') {
         assert.equal(pos.coords.speed, null);
         assert.equal(pos.coords.accuracy, 48.0);
+      } else if (scenario === 'airplane') {
+        assert.ok(pos.coords.speed > 200, 'Expected airplane speed > 200 m/s (~720 km/h)');
+        assert.ok(pos.coords.altitude > 10000, 'Expected airplane altitude > 10,000 m');
       } else {
         assert.equal(typeof pos.coords.speed, 'number');
       }

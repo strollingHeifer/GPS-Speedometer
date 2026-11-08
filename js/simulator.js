@@ -311,6 +311,20 @@ export class TelemetrySimulator {
         break;
       }
 
+      case 'airplane': {
+        // Commercial jetliner high-altitude cruise (~910 - 1110 km/h groundspeed with jet stream tailwinds,
+        // cruising altitude ~10,668 m / 35,000 ft, ±6.2m cabin window GNSS lock, 1.0 Hz Doppler)
+        const baseMps = 1010 / MPS_TO_KMH;
+        speedMps =
+          baseMps +
+          Math.sin(elapsedSec * 0.22) * (75 / MPS_TO_KMH) +
+          Math.cos(elapsedSec * 0.09) * (25 / MPS_TO_KMH);
+        accuracy = 6.2 + Math.sin(elapsedSec * 0.3) * 0.8;
+        this.heading = (84 + Math.sin(elapsedSec * 0.03) * 3 + 360) % 360;
+        this.altitude = 10668.0 + Math.sin(elapsedSec * 0.05) * 45.0;
+        break;
+      }
+
       case 'tunnel': {
         // Degraded tunnel/urban canyon scenario:
         // coords.speed = null (forces accuracy-gated Haversine fallback)
