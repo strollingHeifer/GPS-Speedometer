@@ -22,8 +22,8 @@ import {
 import { RadialGaugeView, SparklineCanvasView } from './charts.js';
 
 const PRESETS_BY_UNIT = {
-  kmh: [30, 50, 80, 100, 120],
-  mph: [20, 30, 50, 65, 75],
+  kmh: [30, 50, 100, 120, 130, 250],
+  mph: [20, 30, 65, 75, 80, 155],
 };
 
 const COLLAPSIBLE_CARD_KEYS = ['threshold', 'confidence', 'sparkline', 'session'];
@@ -758,7 +758,7 @@ export class VelocityTelemetryApp {
 
     if (this.dom.thresholdSlider) {
       this.dom.thresholdSlider.min = isMph ? '5' : '10';
-      this.dom.thresholdSlider.max = isMph ? '140' : '220';
+      this.dom.thresholdSlider.max = isMph ? '190' : '300';
       this.dom.thresholdSlider.value = String(thresholdInUnit);
       this.dom.thresholdSlider.disabled = !this.thresholdEnabled;
     }
@@ -972,7 +972,7 @@ export class VelocityTelemetryApp {
     if (this.dom.thresholdPlusBtn) {
       this.dom.thresholdPlusBtn.addEventListener('click', () => {
         const current = Math.round(mpsToUnit(this.thresholdMps, this.unit));
-        const maxVal = this.unit === 'mph' ? 140 : 220;
+        const maxVal = this.unit === 'mph' ? 190 : 300;
         this.setThresholdInCurrentUnit(Math.min(maxVal, current + 5));
       });
     }
