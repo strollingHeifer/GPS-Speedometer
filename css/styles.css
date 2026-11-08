@@ -871,19 +871,38 @@ body {
 .threshold-header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 .threshold-readout-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
   font-family: var(--md-sys-typescale-font-mono);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  padding: 4px 10px;
+  line-height: 1;
+  padding: 0 10px;
   white-space: nowrap;
+  text-align: center;
+  flex-shrink: 0;
+  border: 1px solid transparent;
   border-radius: var(--md-sys-shape-corner-medium);
   background-color: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
+}
+
+#threshold-display-value {
+  width: 84px;
+  min-width: 84px;
+}
+
+.threshold-readout-pill[data-enabled="false"] {
+  background-color: var(--md-sys-color-tile-surface, var(--md-sys-color-surface-container-low));
+  color: var(--md-sys-color-on-surface-variant);
+  border-color: var(--md-sys-color-outline-variant);
 }
 
 /* M3 Switch Toggle */

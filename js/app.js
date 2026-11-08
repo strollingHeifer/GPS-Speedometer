@@ -748,9 +748,8 @@ export class VelocityTelemetryApp {
     }
 
     if (this.dom.thresholdDisplayValue) {
-      this.dom.thresholdDisplayValue.textContent = this.thresholdEnabled
-        ? `${thresholdInUnit} ${unitLabel}`
-        : `Off (${thresholdInUnit} ${unitLabel})`;
+      this.dom.thresholdDisplayValue.textContent = `${thresholdInUnit} ${unitLabel}`;
+      this.dom.thresholdDisplayValue.setAttribute('data-enabled', String(this.thresholdEnabled));
     }
 
     if (this.dom.thresholdSlider) {
