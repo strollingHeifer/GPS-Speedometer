@@ -1,6 +1,6 @@
 // sw.js — Offline-First Service Worker for GPS Speedometer PWA
 
-const CACHE_NAME = 'gps-speedometer-m3-v2';
+const CACHE_NAME = 'gps-speedometer-m3-v3';
 const APP_SHELL_ASSETS = [
   './',
   './index.html',
