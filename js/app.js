@@ -128,7 +128,8 @@ export class VelocityTelemetryApp {
   _cacheDom() {
     const $ = (id) => document.getElementById(id);
     this.dom = {
-      metaThemeColor: $('meta-theme-color'),
+      metaThemeColorLight: $('meta-theme-color-light'),
+      metaThemeColorDark: $('meta-theme-color-dark'),
       secureContextBanner: $('secure-context-banner'),
       permissionBanner: $('permission-error-banner'),
       permissionTitle: $('permission-error-title'),
@@ -280,16 +281,22 @@ export class VelocityTelemetryApp {
   }
 
   _updateMetaThemeColor() {
-    if (!this.dom.metaThemeColor) return;
-    const prefersDark =
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDarkEffective =
-      this.themeMode === 'dark' || (this.themeMode === 'system' && prefersDark);
-    this.dom.metaThemeColor.setAttribute(
-      'content',
-      isDarkEffective ? '#0e1415' : '#f5fafb'
-    );
+    const { metaThemeColorLight, metaThemeColorDark } = this.dom;
+    if (!metaThemeColorLight && !metaThemeColorDark) return;
+
+    const lightColor = '#f5f8fa';
+    const darkColor = '#0e1415';
+
+    if (this.themeMode === 'light') {
+      if (metaThemeColorLight) metaThemeColorLight.setAttribute('content', lightColor);
+      if (metaThemeColorDark) metaThemeColorDark.setAttribute('content', lightColor);
+    } else if (this.themeMode === 'dark') {
+      if (metaThemeColorLight) metaThemeColorLight.setAttribute('content', darkColor);
+      if (metaThemeColorDark) metaThemeColorDark.setAttribute('content', darkColor);
+    } else {
+      if (metaThemeColorLight) metaThemeColorLight.setAttribute('content', lightColor);
+      if (metaThemeColorDark) metaThemeColorDark.setAttribute('content', darkColor);
+    }
   }
 
   /* ==========================================================================

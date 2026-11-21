@@ -3,7 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#f5fafb" id="meta-theme-color" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#f5f8fa" media="(prefers-color-scheme: light)" id="meta-theme-color-light" />
+  <meta name="theme-color" content="#0e1415" media="(prefers-color-scheme: dark)" id="meta-theme-color-dark" />
+  <script>
+    (function () {
+      var mode = 'system';
+      try {
+        var saved = window.localStorage.getItem('theme');
+        if (saved === 'light' || saved === 'dark' || saved === 'system') mode = saved;
+      } catch (_) {}
+      document.documentElement.setAttribute('data-theme', mode);
+      var lightMeta = document.getElementById('meta-theme-color-light');
+      var darkMeta = document.getElementById('meta-theme-color-dark');
+      if (mode === 'light') {
+        if (lightMeta) lightMeta.setAttribute('content', '#f5f8fa');
+        if (darkMeta) darkMeta.setAttribute('content', '#f5f8fa');
+      } else if (mode === 'dark') {
+        if (lightMeta) lightMeta.setAttribute('content', '#0e1415');
+        if (darkMeta) darkMeta.setAttribute('content', '#0e1415');
+      }
+    })();
+  </script>
   <meta name="description" content="GPS Speedometer — Material Design 3 Expressive real-time GPS speedometer, accuracy confidence, and speed limit alert instrument." />
   <meta name="application-name" content="GPS Speedometer" />
   <meta name="apple-mobile-web-app-title" content="GPS Speedometer" />
